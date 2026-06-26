@@ -22,20 +22,28 @@ body { font-family: Arial, sans-serif; background: #f4f6fb; color: #1a1a2e; disp
 .toggle-btn { padding: 5px 12px; border: 1px solid #c8d4e8; border-radius: 16px; font-size: 11px; cursor: pointer; background: white; color: #1C3D6E; }
 .toggle-btn.active { background: #1C3D6E; color: white; border-color: #1C3D6E; }
 select { padding: 5px 8px; border: 1px solid #c8d4e8; border-radius: 5px; font-size: 11px; color: #1C3D6E; }
+#breadcrumb { background: #eef2f9; border-bottom: 1px solid #c8d4e8; padding: 6px 20px; font-size: 12px; color: #1C3D6E; display: flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 30px; }
+#breadcrumb span { cursor: pointer; }
+#breadcrumb span:hover { text-decoration: underline; }
+#breadcrumb .sep { color: #aaa; }
+#zoom-hint { font-size: 11px; color: #888; margin-left: auto; }
 #main { display: flex; flex: 1; overflow: hidden; }
-#map-container { flex: 1; position: relative; background: #dbeafe; overflow: hidden; }
+#map-container { flex: 1; position: relative; background: #dbeafe; overflow: hidden; cursor: pointer; }
 svg { width: 100%; height: 100%; }
 .state { stroke: white; stroke-width: 0.5; cursor: pointer; transition: opacity 0.15s; }
-.state:hover { stroke-width: 1.5; opacity: 0.85; }
-.state-label { font-size: 7px; fill: rgba(255,255,255,0.85); pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; }
-.city-dot { cursor: pointer; fill: rgba(220, 50, 47, 0.75); stroke: #9b111e; stroke-width: 1; }
+.state:hover { stroke-width: 1.5; opacity: 0.82; }
+.state-border { fill: none; stroke: white; stroke-width: 0.5; pointer-events: none; }
+.state-label { font-size: 8px; fill: rgba(255,255,255,0.9); pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; font-weight: bold; }
+.city-dot { cursor: pointer; fill: rgba(220,50,47,0.75); stroke: #9b111e; stroke-width: 1; transition: all 0.1s; }
 .city-dot:hover { fill: rgba(220,50,47,1); stroke-width: 2; }
+.city-label { font-size: 9px; fill: #1a1a2e; pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; }
 #tooltip { position: absolute; background: white; border: 1px solid #c8d4e8; border-radius: 8px; padding: 10px 14px; font-size: 12px; max-width: 260px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); pointer-events: none; display: none; z-index: 100; }
 #tooltip h3 { font-family: Georgia, serif; font-size: 13px; color: #1C3D6E; margin-bottom: 6px; border-bottom: 2px solid #1C3D6E; padding-bottom: 4px; }
 .tt-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 3px; font-size: 11px; }
 .tt-key { color: #888; }
 .tt-val { font-weight: bold; }
 .tt-cos { margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; font-size: 10.5px; color: #555; line-height: 1.5; }
+.tt-hint { margin-top: 6px; font-size: 10px; color: #1C3D6E; font-style: italic; }
 #panel { width: 300px; height: 100%; background: white; border-left: 1px solid #c8d4e8; overflow-y: auto; flex-shrink: 0; display: none; }
 #panel.open { display: block; }
 #panel-header { background: #1C3D6E; color: white; padding: 14px 16px; position: sticky; top: 0; z-index: 10; }
@@ -58,7 +66,12 @@ svg { width: 100%; height: 100%; }
 .leg-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; font-size: 10px; color: #444; }
 .leg-swatch { width: 14px; height: 10px; border-radius: 2px; }
 .leg-circle { border-radius: 50%; background: rgba(220,50,47,0.7); border: 1px solid #9b111e; flex-shrink: 0; }
-#source-note { position: absolute; bottom: 8px; right: 8px; font-size: 9px; color: rgba(0,0,0,0.4); font-family: Arial; }
+#zoom-controls { position: absolute; bottom: 12px; right: 12px; display: flex; flex-direction: column; gap: 4px; }
+.zoom-btn { width: 32px; height: 32px; background: white; border: 1px solid #c8d4e8; border-radius: 6px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); color: #1C3D6E; font-weight: bold; line-height: 1; }
+.zoom-btn:hover { background: #eef2f9; }
+#back-btn { position: absolute; top: 10px; left: 10px; background: white; border: 1px solid #c8d4e8; border-radius: 6px; padding: 6px 12px; font-size: 11px; cursor: pointer; display: none; color: #1C3D6E; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+#back-btn:hover { background: #eef2f9; }
+#view-mode-badge { position: absolute; top: 10px; right: 10px; background: rgba(28,61,110,0.85); color: white; border-radius: 12px; padding: 4px 10px; font-size: 10px; font-family: Arial, sans-serif; }
 </style>
 </head>
 <body>
@@ -103,30 +116,43 @@ svg { width: 100%; height: 100%; }
     <option>Metals</option>
     <option>Biotechnology</option>
   </select>
-  <span style="font-size:11px;color:#888;margin-left:auto;">Click any state or city marker for details</span>
+  <span style="font-size:11px;color:#888;margin-left:auto;">Click a state to zoom in · Click a city marker for details</span>
+</div>
+
+<div id="breadcrumb">
+  <span id="bc-national" onclick="resetZoom()" style="font-weight:bold;">🗺 United States</span>
+  <span class="sep" id="bc-sep" style="display:none;">›</span>
+  <span id="bc-state" style="display:none;"></span>
+  <span id="zoom-hint" class="zoom-hint"></span>
 </div>
 
 <div id="main">
   <div id="map-container">
     <svg id="map-svg"></svg>
+    <button id="back-btn" onclick="resetZoom()">← Back to U.S.</button>
+    <div id="view-mode-badge">National view</div>
     <div id="tooltip"></div>
     <div id="legend">
       <h4 id="leg-title">Capital investment (USD M)</h4>
-      <div class="leg-row"><div class="leg-swatch" style="background:#dbeafe;"></div>No data</div>
+      <div class="leg-row"><div class="leg-swatch" style="background:#e2e8f0;"></div>No data</div>
       <div class="leg-row"><div class="leg-swatch" style="background:#93c5fd;"></div>Low</div>
       <div class="leg-row"><div class="leg-swatch" style="background:#3b82f6;"></div>Medium</div>
       <div class="leg-row"><div class="leg-swatch" style="background:#1d4ed8;"></div>High</div>
       <div class="leg-row"><div class="leg-swatch" style="background:#1e3a8a;"></div>Very high</div>
       <div style="border-top:1px solid #e5e7eb;margin-top:6px;padding-top:6px;">
-        <div class="leg-row"><div class="leg-circle" style="width:6px;height:6px;"></div>Small</div>
-        <div class="leg-row"><div class="leg-circle" style="width:12px;height:12px;"></div>Large</div>
+        <div class="leg-row"><div class="leg-circle" style="width:6px;height:6px;"></div>Small investment</div>
+        <div class="leg-row"><div class="leg-circle" style="width:14px;height:14px;"></div>Large investment</div>
       </div>
     </div>
-    <div id="source-note">fDi Markets 2003–2026 · AIT U.S. Commercial Service</div>
+    <div id="zoom-controls">
+      <button class="zoom-btn" onclick="manualZoom(1.4)" title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="manualZoom(0.7)" title="Zoom out">−</button>
+      <button class="zoom-btn" onclick="resetZoom()" title="Reset" style="font-size:13px;">⌂</button>
+    </div>
   </div>
   <div id="panel">
     <div id="panel-header">
-      <button id="panel-close" onclick="closePanel()">&#10005;</button>
+      <button id="panel-close" onclick="closePanel()">✕</button>
       <h2 id="panel-title"></h2>
       <p id="panel-sub"></p>
     </div>
@@ -139,19 +165,31 @@ const FDI = {"states": {"PR": {"name": "Puerto Rico", "projects": 1, "jobs": 49,
 
 let showDots = true;
 let activeSector = '';
-let projection, path;
+let projection, path, svg, g, zoom;
+let currentZoomState = null;
+let usData, stateFeatures, fipsToAbbr;
 
 const colorScales = {
   capex:    [0, 50, 500, 5000, 50000],
   jobs:     [0, 100, 500, 2000, 10000],
   projects: [0, 1, 3, 8, 20]
 };
-const colors = ['#dbeafe','#93c5fd','#3b82f6','#1d4ed8','#1e3a8a'];
+const colors = ['#e2e8f0','#93c5fd','#3b82f6','#1d4ed8','#1e3a8a'];
 
-function getColor(stateAbbr, metric) {
-  const d = FDI.states[stateAbbr];
+const FIPS_TO_ABBR = {
+  "01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL",
+  "13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA",
+  "23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE",
+  "32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK",
+  "41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT",
+  "51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"
+};
+
+function getColor(abbr) {
+  const d = FDI.states[abbr];
   if (!d) return '#e2e8f0';
   if (activeSector && !d.sectors.includes(activeSector)) return '#e2e8f0';
+  const metric = document.getElementById('color-by').value;
   const val = metric === 'capex' ? d.capex : metric === 'jobs' ? d.jobs : d.projects;
   const breaks = colorScales[metric];
   for (let i = breaks.length - 1; i >= 0; i--) {
@@ -160,99 +198,159 @@ function getColor(stateAbbr, metric) {
   return colors[0];
 }
 
-function dotRadius(city) {
-  const v = city.capex;
-  if (v < 15) return 4;
-  if (v < 50) return 6;
-  if (v < 200) return 9;
-  if (v < 1000) return 13;
-  return 18;
+function dotRadius(capex) {
+  if (capex < 15) return 5;
+  if (capex < 50) return 7;
+  if (capex < 200) return 10;
+  if (capex < 1000) return 14;
+  return 20;
 }
 
 function fmt(n) { return n ? n.toLocaleString() : '—'; }
 function fmtM(n) { return n ? '$' + n.toLocaleString() + 'M' : '—'; }
 
 async function initMap() {
-  const svg = d3.select('#map-svg');
   const container = document.getElementById('map-container');
   const w = container.clientWidth;
   const h = container.clientHeight;
-  svg.attr('viewBox', `0 0 ${w} ${h}`);
 
-  // Load US TopoJSON from CDN
-  const us = await d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json');
+  svg = d3.select('#map-svg').attr('viewBox', `0 0 ${w} ${h}`);
+
+  // Zoom behavior — mouse wheel + drag
+  zoom = d3.zoom()
+    .scaleExtent([0.8, 20])
+    .on('zoom', (event) => {
+      g.attr('transform', event.transform);
+      // Scale dot sizes inversely so they don't get huge when zoomed
+      const k = event.transform.k;
+      g.selectAll('.city-dot').attr('r', d => dotRadius(d.capex) / Math.sqrt(k));
+      g.selectAll('.state-label').style('font-size', `${8 / Math.sqrt(k)}px`);
+      g.selectAll('.city-label').style('font-size', `${9 / Math.sqrt(k)}px`);
+      g.selectAll('.state-border').attr('stroke-width', 0.5 / k);
+      g.selectAll('.state').attr('stroke-width', 0.5 / k);
+    });
+
+  svg.call(zoom);
+
+  // Prevent context menu on right click
+  svg.on('contextmenu', e => e.preventDefault());
+
+  g = svg.append('g');
+
+  usData = await d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json');
+  stateFeatures = topojson.feature(usData, usData.objects.states);
+  fipsToAbbr = FIPS_TO_ABBR;
 
   projection = d3.geoAlbersUsa()
-    .scale(w * 1.22)
+    .scale(w * 0.95)
     .translate([w / 2, h / 2]);
+
   path = d3.geoPath().projection(projection);
 
-  const stateFeatures = topojson.feature(us, us.objects.states);
-  const stateMesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
-
-  // FIPS to abbreviation
-  const fipsToAbbr = {
-    "01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL",
-    "13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA",
-    "23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE",
-    "32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK",
-    "41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT",
-    "51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"
-  };
-
-  const metric = document.getElementById('color-by').value;
-
   // Draw states
-  svg.selectAll('.state')
+  g.selectAll('.state')
     .data(stateFeatures.features)
     .join('path')
     .attr('class', 'state')
     .attr('d', path)
-    .attr('fill', d => getColor(fipsToAbbr[d.id], metric))
+    .attr('fill', d => getColor(fipsToAbbr[d.id]))
     .on('mouseover', function(event, d) {
       const abbr = fipsToAbbr[d.id];
       const fdi = FDI.states[abbr];
-      showTooltip(event, abbr, fdi);
+      showStateTooltip(event, abbr, fdi);
     })
     .on('mousemove', moveTooltip)
     .on('mouseout', hideTooltip)
     .on('click', function(event, d) {
+      event.stopPropagation();
+      hideTooltip();
       const abbr = fipsToAbbr[d.id];
       const fdi = FDI.states[abbr];
-      if (fdi) openStatePanel(abbr, fdi);
+      zoomToState(d, abbr, fdi);
     });
 
   // State borders
-  svg.append('path')
-    .datum(stateMesh)
-    .attr('fill', 'none')
-    .attr('stroke', 'white')
-    .attr('stroke-width', 0.5)
+  g.append('path')
+    .datum(topojson.mesh(usData, usData.objects.states, (a,b) => a !== b))
+    .attr('class', 'state-border')
     .attr('d', path);
 
-  // State abbreviation labels
-  svg.selectAll('.state-label')
+  // State labels
+  g.selectAll('.state-label')
     .data(stateFeatures.features)
     .join('text')
     .attr('class', 'state-label')
     .attr('transform', d => {
       const c = path.centroid(d);
-      return c && !isNaN(c[0]) ? `translate(${c})` : 'translate(-999,-999)';
+      return (c && !isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)';
     })
     .text(d => fipsToAbbr[d.id] || '');
 
-  // City dots
   drawCities();
+}
 
-  // Store reference for recolor
-  window._stateSelection = svg.selectAll('.state');
-  window._fipsToAbbr = fipsToAbbr;
+function zoomToState(feature, abbr, fdi) {
+  const container = document.getElementById('map-container');
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+
+  const [[x0, y0], [x1, y1]] = path.bounds(feature);
+  const stateW = x1 - x0;
+  const stateH = y1 - y0;
+  const scale = Math.min(8, 0.85 / Math.max(stateW / w, stateH / h));
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2;
+
+  currentZoomState = abbr;
+
+  svg.transition().duration(700).call(
+    zoom.transform,
+    d3.zoomIdentity
+      .translate(w / 2, h / 2)
+      .scale(scale)
+      .translate(-cx, -cy)
+  );
+
+  // Update UI
+  document.getElementById('back-btn').style.display = 'block';
+  document.getElementById('view-mode-badge').textContent = `${abbr} — click city markers for details`;
+  document.getElementById('bc-state').textContent = fdi ? fdi.name : abbr;
+  document.getElementById('bc-state').style.display = 'inline';
+  document.getElementById('bc-sep').style.display = 'inline';
+
+  // Show city labels when zoomed in
+  g.selectAll('.city-label').style('display', 'block');
+
+  if (fdi) openStatePanel(abbr, fdi);
+}
+
+function resetZoom() {
+  const container = document.getElementById('map-container');
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+
+  currentZoomState = null;
+
+  svg.transition().duration(600).call(
+    zoom.transform,
+    d3.zoomIdentity
+  );
+
+  document.getElementById('back-btn').style.display = 'none';
+  document.getElementById('view-mode-badge').textContent = 'National view';
+  document.getElementById('bc-state').style.display = 'none';
+  document.getElementById('bc-sep').style.display = 'none';
+  g.selectAll('.city-label').style('display', 'none');
+  closePanel();
+}
+
+function manualZoom(factor) {
+  svg.transition().duration(300).call(zoom.scaleBy, factor);
 }
 
 function drawCities() {
-  const svg = d3.select('#map-svg');
-  svg.selectAll('.city-dot').remove();
-  svg.selectAll('.city-label').remove();
+  g.selectAll('.city-dot').remove();
+  g.selectAll('.city-label').remove();
   if (!showDots) return;
 
   const cities = FDI.cities.filter(c => {
@@ -260,33 +358,39 @@ function drawCities() {
     return true;
   });
 
-  svg.selectAll('.city-dot')
+  const cityG = g.selectAll('.city-group')
     .data(cities)
-    .join('circle')
+    .join('g')
+    .attr('class', 'city-group')
+    .attr('transform', d => {
+      const p = projection([d.lng, d.lat]);
+      return p ? `translate(${p[0]},${p[1]})` : 'translate(-9999,-9999)';
+    });
+
+  cityG.append('circle')
     .attr('class', 'city-dot')
-    .attr('cx', d => {
-      const p = projection([d.lng, d.lat]);
-      return p ? p[0] : -999;
-    })
-    .attr('cy', d => {
-      const p = projection([d.lng, d.lat]);
-      return p ? p[1] : -999;
-    })
-    .attr('r', d => dotRadius(d))
-    .attr('opacity', 0.8)
+    .attr('r', d => dotRadius(d.capex))
     .on('mouseover', function(event, d) { showCityTooltip(event, d); })
     .on('mousemove', moveTooltip)
     .on('mouseout', hideTooltip)
-    .on('click', function(event, d) { openCityPanel(d); event.stopPropagation(); });
+    .on('click', function(event, d) {
+      event.stopPropagation();
+      hideTooltip();
+      openCityPanel(d);
+    });
+
+  cityG.append('text')
+    .attr('class', 'city-label')
+    .attr('dy', d => dotRadius(d.capex) + 10)
+    .style('display', 'none')
+    .text(d => d.city.replace(/ \([A-Z]{2}\)/, ''));
 }
 
 function recolor() {
   const metric = document.getElementById('color-by').value;
   const labels = { capex: 'Capital investment (USD M)', jobs: 'Jobs created', projects: 'No. of projects' };
   document.getElementById('leg-title').textContent = labels[metric];
-  if (window._stateSelection && window._fipsToAbbr) {
-    window._stateSelection.attr('fill', d => getColor(window._fipsToAbbr[d.id], metric));
-  }
+  g.selectAll('.state').attr('fill', d => getColor(fipsToAbbr[d.id]));
 }
 
 function toggleDots(btn) {
@@ -298,15 +402,15 @@ function toggleDots(btn) {
 
 function filterSector() {
   activeSector = document.getElementById('sector-filter').value;
-  recolor();
+  g.selectAll('.state').attr('fill', d => getColor(fipsToAbbr[d.id]));
   drawCities();
 }
 
 // Tooltip
-function showTooltip(event, abbr, d) {
+function showStateTooltip(event, abbr, d) {
   const tt = document.getElementById('tooltip');
   if (!d) {
-    tt.innerHTML = `<h3>${abbr}</h3><div class="tt-row"><span class="tt-key">No Taiwan FDI data</span></div>`;
+    tt.innerHTML = `<h3>${abbr}</h3><div style="font-size:11px;color:#888;">No Taiwan FDI recorded</div>`;
   } else {
     const cos = d.companies.slice(0,4).join(', ') + (d.companies.length > 4 ? ` +${d.companies.length-4} more` : '');
     tt.innerHTML = `<h3>${d.name}</h3>
@@ -314,7 +418,8 @@ function showTooltip(event, abbr, d) {
       <div class="tt-row"><span class="tt-key">Capital invested</span><span class="tt-val">${fmtM(d.capex)}</span></div>
       <div class="tt-row"><span class="tt-key">Jobs created</span><span class="tt-val">${fmt(d.jobs)}</span></div>
       <div class="tt-row"><span class="tt-key">Companies</span><span class="tt-val">${d.companies.length}</span></div>
-      <div class="tt-cos"><strong>Top companies:</strong> ${cos}</div>`;
+      <div class="tt-cos"><strong>Companies:</strong> ${cos}</div>
+      <div class="tt-hint">Click to zoom into ${d.name}</div>`;
   }
   tt.style.display = 'block';
   moveTooltip(event);
@@ -327,50 +432,46 @@ function showCityTooltip(event, city) {
     <div class="tt-row"><span class="tt-key">Projects</span><span class="tt-val">${city.count}</span></div>
     <div class="tt-row"><span class="tt-key">Capital invested</span><span class="tt-val">${fmtM(city.capex)}</span></div>
     <div class="tt-row"><span class="tt-key">Jobs created</span><span class="tt-val">${fmt(city.jobs)}</span></div>
-    <div class="tt-cos"><strong>Companies:</strong> ${cos}</div>`;
+    <div class="tt-cos"><strong>Companies:</strong> ${cos}</div>
+    <div class="tt-hint">Click for full details</div>`;
   tt.style.display = 'block';
   moveTooltip(event);
 }
 
 function moveTooltip(event) {
   const tt = document.getElementById('tooltip');
-  const container = document.getElementById('map-container');
-  const rect = container.getBoundingClientRect();
+  const rect = document.getElementById('map-container').getBoundingClientRect();
   let x = event.clientX - rect.left + 14;
   let y = event.clientY - rect.top - 10;
   if (x + 270 > rect.width) x = event.clientX - rect.left - 278;
-  if (y + 180 > rect.height) y = y - 160;
+  if (y + 200 > rect.height) y = y - 170;
   tt.style.left = x + 'px';
   tt.style.top = y + 'px';
 }
 
 function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
 
-// Panel
+// Side panel
 function openStatePanel(abbr, d) {
   document.getElementById('panel-title').textContent = d.name;
   document.getElementById('panel-sub').textContent = `${d.projects} Taiwan FDI projects · ${d.companies.length} companies`;
-  
   const sectors = d.sectors.map(s=>`<span class="sector-tag">${s}</span>`).join('');
   const cities = d.cities.length ? d.cities.slice(0,15).join(', ') + (d.cities.length > 15 ? ` +${d.cities.length-15} more` : '') : '—';
   const cos = d.companies.map(c=>`<div class="co-card"><div class="co-name">${c}</div></div>`).join('');
-  
   document.getElementById('panel-body').innerHTML = `
     <div class="p-stat"><span class="p-stat-key">Capital invested</span><span class="p-stat-val">${fmtM(d.capex)}</span></div>
     <div class="p-stat"><span class="p-stat-key">Jobs created</span><span class="p-stat-val">${fmt(d.jobs)}</span></div>
     <div class="p-stat"><span class="p-stat-key">Projects</span><span class="p-stat-val">${d.projects}</span></div>
     <div class="p-stat"><span class="p-stat-key">Companies</span><span class="p-stat-val">${d.companies.length}</span></div>
     <div class="p-section"><div class="p-section-title">Sectors</div>${sectors}</div>
-    <div class="p-section"><div class="p-section-title">Cities</div><div style="font-size:11.5px;color:#444;line-height:1.7;">${cities}</div></div>
-    <div class="p-section"><div class="p-section-title">All companies (${d.companies.length})</div>${cos}</div>
-  `;
+    <div class="p-section"><div class="p-section-title">Cities with investment</div><div style="font-size:11.5px;color:#444;line-height:1.7;">${cities}</div></div>
+    <div class="p-section"><div class="p-section-title">All companies (${d.companies.length})</div>${cos}</div>`;
   document.getElementById('panel').classList.add('open');
 }
 
 function openCityPanel(city) {
   document.getElementById('panel-title').textContent = city.city;
   document.getElementById('panel-sub').textContent = `${city.state} · ${city.count} project${city.count>1?'s':''}`;
-  
   const sectors = city.sectors.map(s=>`<span class="sector-tag">${s}</span>`).join('');
   const cos = city.companies.map(c=>`
     <div class="co-card">
@@ -379,34 +480,35 @@ function openCityPanel(city) {
         ${c.sector} · ${c.activity}<br>
         ${c.jobs ? 'Jobs: '+fmt(c.jobs) : ''} ${c.capex ? '· '+fmtM(c.capex) : ''}
         ${c.website ? '<br><a class="co-link" href="https://'+c.website+'" target="_blank">'+c.website+' ↗</a>' : ''}
-        ${c.source ? '<br><a class="co-link" href="'+c.source+'" target="_blank">Source ↗</a>' : ''}
+        ${c.source ? '<br><a class="co-link" href="'+c.source+'" target="_blank">View source ↗</a>' : ''}
       </div>
     </div>`).join('');
-  
   document.getElementById('panel-body').innerHTML = `
     <div class="p-stat"><span class="p-stat-key">Capital invested</span><span class="p-stat-val">${fmtM(city.capex)}</span></div>
     <div class="p-stat"><span class="p-stat-key">Jobs created</span><span class="p-stat-val">${fmt(city.jobs)}</span></div>
     <div class="p-stat"><span class="p-stat-key">Projects</span><span class="p-stat-val">${city.count}</span></div>
     <div class="p-section"><div class="p-section-title">Sectors</div>${sectors}</div>
-    <div class="p-section"><div class="p-section-title">Companies</div>${cos}</div>
-  `;
+    <div class="p-section"><div class="p-section-title">Companies (${city.companies.length})</div>${cos}</div>`;
   document.getElementById('panel').classList.add('open');
 }
 
 function closePanel() { document.getElementById('panel').classList.remove('open'); }
 
-// Resize handler
 window.addEventListener('resize', () => {
   const container = document.getElementById('map-container');
-  const svg = d3.select('#map-svg');
-  svg.attr('viewBox', `0 0 ${container.clientWidth} ${container.clientHeight}`);
+  const w = container.clientWidth, h = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${w} ${h}`);
   if (projection) {
-    projection.scale(container.clientWidth * 1.22).translate([container.clientWidth/2, container.clientHeight/2]);
-    svg.selectAll('.state').attr('d', path);
-    svg.selectAll('.state-label').attr('transform', d => {
-      const c = path.centroid(d); return c && !isNaN(c[0]) ? `translate(${c})` : 'translate(-999,-999)';
+    projection.scale(w * 0.95).translate([w/2, h/2]);
+    g.selectAll('.state').attr('d', path);
+    g.selectAll('.state-label').attr('transform', d => {
+      const c = path.centroid(d);
+      return (c && !isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)';
     });
-    drawCities();
+    g.selectAll('.city-group').attr('transform', d => {
+      const p = projection([d.lng, d.lat]);
+      return p ? `translate(${p[0]},${p[1]})` : 'translate(-9999,-9999)';
+    });
   }
 });
 
