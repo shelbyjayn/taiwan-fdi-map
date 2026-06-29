@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,38 +23,44 @@ body { font-family: Arial, sans-serif; background: #f4f6fb; color: #1a1a2e; disp
 .toggle-btn { padding: 5px 12px; border: 1px solid #c8d4e8; border-radius: 16px; font-size: 11px; cursor: pointer; background: white; color: #1C3D6E; }
 .toggle-btn.active { background: #1C3D6E; color: white; border-color: #1C3D6E; }
 select { padding: 5px 8px; border: 1px solid #c8d4e8; border-radius: 5px; font-size: 11px; color: #1C3D6E; }
-#breadcrumb { background: #eef2f9; border-bottom: 1px solid #c8d4e8; padding: 6px 20px; font-size: 12px; color: #1C3D6E; display: flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 30px; }
-#breadcrumb span { cursor: pointer; }
-#breadcrumb span:hover { text-decoration: underline; }
-#breadcrumb .sep { color: #aaa; }
-#zoom-hint { font-size: 11px; color: #888; margin-left: auto; }
+#breadcrumb { background: #eef2f9; border-bottom: 1px solid #c8d4e8; padding: 6px 20px; font-size: 12px; color: #1C3D6E; display: flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 32px; }
+.bc-item { cursor: pointer; font-weight: 600; }
+.bc-item:hover { text-decoration: underline; }
+.bc-sep { color: #aaa; font-weight: normal; }
+.bc-current { color: #1a1a2e; font-weight: bold; cursor: default; }
+#hint { font-size: 11px; color: #888; margin-left: auto; }
 #main { display: flex; flex: 1; overflow: hidden; }
-#map-container { flex: 1; position: relative; background: #dbeafe; overflow: hidden; cursor: pointer; }
+#map-container { flex: 1; position: relative; background: #dbeafe; overflow: hidden; cursor: grab; }
+#map-container:active { cursor: grabbing; }
 svg { width: 100%; height: 100%; }
-.state { stroke: white; stroke-width: 0.5; cursor: pointer; transition: opacity 0.15s; }
-.state:hover { stroke-width: 1.5; opacity: 0.82; }
+.state { stroke: white; stroke-width: 0.5; cursor: pointer; }
+.state:hover { opacity: 0.82; }
 .state-border { fill: none; stroke: white; stroke-width: 0.5; pointer-events: none; }
-.state-label { font-size: 8px; fill: rgba(255,255,255,0.9); pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; font-weight: bold; }
-.city-dot { cursor: pointer; fill: rgba(220,50,47,0.75); stroke: #9b111e; stroke-width: 1; transition: all 0.1s; }
-.city-dot:hover { fill: rgba(220,50,47,1); stroke-width: 2; }
-.city-label { font-size: 9px; fill: #1a1a2e; pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; }
+.state-label-nat { font-size: 8px; fill: rgba(255,255,255,0.9); pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; font-weight: bold; }
+/* City dots */
+.city-dot { cursor: pointer; stroke: #9b111e; stroke-width: 1; }
+.city-dot:hover { stroke-width: 2.5; opacity: 1; }
+/* City labels — only shown in state view, only for active state cities */
+.city-label-wrap { pointer-events: none; }
+.city-label-bg { fill: white; opacity: 0.88; }
+.city-label-text { font-family: Arial, sans-serif; font-weight: 700; fill: #1a1a2e; text-anchor: middle; dominant-baseline: middle; }
+/* Tooltip */
 #tooltip { position: absolute; background: white; border: 1px solid #c8d4e8; border-radius: 8px; padding: 10px 14px; font-size: 12px; max-width: 260px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); pointer-events: none; display: none; z-index: 100; }
 #tooltip h3 { font-family: Georgia, serif; font-size: 13px; color: #1C3D6E; margin-bottom: 6px; border-bottom: 2px solid #1C3D6E; padding-bottom: 4px; }
 .tt-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 3px; font-size: 11px; }
-.tt-key { color: #888; }
-.tt-val { font-weight: bold; }
+.tt-key { color: #888; } .tt-val { font-weight: bold; }
 .tt-cos { margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; font-size: 10.5px; color: #555; line-height: 1.5; }
-.tt-hint { margin-top: 6px; font-size: 10px; color: #1C3D6E; font-style: italic; }
+.tt-hint { margin-top: 5px; font-size: 10px; color: #1C3D6E; font-style: italic; }
+/* Panel */
 #panel { width: 300px; height: 100%; background: white; border-left: 1px solid #c8d4e8; overflow-y: auto; flex-shrink: 0; display: none; }
 #panel.open { display: block; }
 #panel-header { background: #1C3D6E; color: white; padding: 14px 16px; position: sticky; top: 0; z-index: 10; }
-#panel-header h2 { font-family: Georgia, serif; font-size: 16px; font-weight: bold; }
+#panel-header h2 { font-family: Georgia, serif; font-size: 16px; font-weight: bold; padding-right: 24px; }
 #panel-header p { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 3px; }
-#panel-close { float: right; background: none; border: none; color: white; font-size: 16px; cursor: pointer; margin-top: -2px; }
+#panel-close { position: absolute; top: 14px; right: 14px; background: none; border: none; color: white; font-size: 16px; cursor: pointer; }
 #panel-body { padding: 14px 16px; }
 .p-stat { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f0f4fa; font-size: 12px; }
-.p-stat-key { color: #666; }
-.p-stat-val { font-weight: bold; color: #1C3D6E; }
+.p-stat-key { color: #666; } .p-stat-val { font-weight: bold; color: #1C3D6E; }
 .p-section { margin-top: 14px; }
 .p-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #999; font-weight: 700; margin-bottom: 7px; }
 .co-card { background: #f4f6fb; border-left: 3px solid #1C3D6E; border-radius: 0 6px 6px 0; padding: 8px 10px; margin-bottom: 6px; }
@@ -61,28 +68,25 @@ svg { width: 100%; height: 100%; }
 .co-meta { font-size: 10.5px; color: #666; line-height: 1.5; }
 .co-link { color: #1C3D6E; text-decoration: none; font-size: 10.5px; }
 .sector-tag { display: inline-block; background: #e8eef7; color: #1C3D6E; font-size: 10px; padding: 2px 6px; border-radius: 8px; margin: 2px 2px 2px 0; }
-#legend { position: absolute; bottom: 12px; left: 12px; background: rgba(255,255,255,0.95); border: 1px solid #c8d4e8; border-radius: 8px; padding: 10px 12px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+/* Legend */
+#legend { position: absolute; bottom: 52px; left: 12px; background: rgba(255,255,255,0.95); border: 1px solid #c8d4e8; border-radius: 8px; padding: 10px 12px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 #legend h4 { font-size: 10px; color: #1C3D6E; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
 .leg-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; font-size: 10px; color: #444; }
 .leg-swatch { width: 14px; height: 10px; border-radius: 2px; }
 .leg-circle { border-radius: 50%; background: rgba(220,50,47,0.7); border: 1px solid #9b111e; flex-shrink: 0; }
-#zoom-controls { position: absolute; bottom: 12px; right: 12px; display: flex; flex-direction: column; gap: 4px; }
-.zoom-btn { width: 32px; height: 32px; background: white; border: 1px solid #c8d4e8; border-radius: 6px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); color: #1C3D6E; font-weight: bold; line-height: 1; }
+/* Zoom controls */
+#zoom-controls { position: absolute; bottom: 12px; left: 12px; display: flex; gap: 4px; }
+.zoom-btn { width: 30px; height: 30px; background: white; border: 1px solid #c8d4e8; border-radius: 6px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); color: #1C3D6E; font-weight: bold; }
 .zoom-btn:hover { background: #eef2f9; }
-#back-btn { position: absolute; top: 10px; left: 10px; background: white; border: 1px solid #c8d4e8; border-radius: 6px; padding: 6px 12px; font-size: 11px; cursor: pointer; display: none; color: #1C3D6E; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-#back-btn:hover { background: #eef2f9; }
-#view-mode-badge { position: absolute; top: 10px; right: 10px; background: rgba(28,61,110,0.85); color: white; border-radius: 12px; padding: 4px 10px; font-size: 10px; font-family: Arial, sans-serif; }
 </style>
 </head>
 <body>
-
 <div id="header">
   <div>
     <h1>Taiwan FDI in the United States — Interactive Investment Map</h1>
     <p>Source: fDi Markets · January 2003 – April 2026 · American Institute in Taiwan, U.S. Commercial Service &nbsp;|&nbsp; <em>Internal use only</em></p>
   </div>
 </div>
-
 <div id="stats-bar">
   <div class="stat-pill"><div class="stat-num">254</div><div class="stat-lbl">Total projects</div></div>
   <div class="stat-pill"><div class="stat-num">35</div><div class="stat-lbl">States</div></div>
@@ -90,7 +94,6 @@ svg { width: 100%; height: 100%; }
   <div class="stat-pill"><div class="stat-num">59,022</div><div class="stat-lbl">Jobs created</div></div>
   <div class="stat-pill"><div class="stat-num">180+</div><div class="stat-lbl">Companies</div></div>
 </div>
-
 <div id="controls">
   <span class="ctrl-label">Color by:</span>
   <select id="color-by" onchange="recolor()">
@@ -116,21 +119,18 @@ svg { width: 100%; height: 100%; }
     <option>Metals</option>
     <option>Biotechnology</option>
   </select>
-  <span style="font-size:11px;color:#888;margin-left:auto;">Click a state to zoom in · Click a city marker for details</span>
 </div>
-
 <div id="breadcrumb">
-  <span id="bc-national" onclick="resetZoom()" style="font-weight:bold;">🗺 United States</span>
-  <span class="sep" id="bc-sep" style="display:none;">›</span>
-  <span id="bc-state" style="display:none;"></span>
-  <span id="zoom-hint" class="zoom-hint"></span>
+  <span class="bc-item" id="bc-us" onclick="goNational()">🗺 United States</span>
+  <span class="bc-sep" id="bc-sep1" style="display:none;">›</span>
+  <span class="bc-item" id="bc-state-name" style="display:none;" onclick="goState()"></span>
+  <span class="bc-sep" id="bc-sep2" style="display:none;">›</span>
+  <span class="bc-current" id="bc-city-name" style="display:none;"></span>
+  <span id="hint"></span>
 </div>
-
 <div id="main">
   <div id="map-container">
     <svg id="map-svg"></svg>
-    <button id="back-btn" onclick="resetZoom()">← Back to U.S.</button>
-    <div id="view-mode-badge">National view</div>
     <div id="tooltip"></div>
     <div id="legend">
       <h4 id="leg-title">Capital investment (USD M)</h4>
@@ -140,18 +140,18 @@ svg { width: 100%; height: 100%; }
       <div class="leg-row"><div class="leg-swatch" style="background:#1d4ed8;"></div>High</div>
       <div class="leg-row"><div class="leg-swatch" style="background:#1e3a8a;"></div>Very high</div>
       <div style="border-top:1px solid #e5e7eb;margin-top:6px;padding-top:6px;">
-        <div class="leg-row"><div class="leg-circle" style="width:6px;height:6px;"></div>Small investment</div>
-        <div class="leg-row"><div class="leg-circle" style="width:14px;height:14px;"></div>Large investment</div>
+        <div class="leg-row"><div class="leg-circle" style="width:6px;height:6px;"></div>Small</div>
+        <div class="leg-row"><div class="leg-circle" style="width:14px;height:14px;"></div>Large</div>
       </div>
     </div>
     <div id="zoom-controls">
-      <button class="zoom-btn" onclick="manualZoom(1.4)" title="Zoom in">+</button>
-      <button class="zoom-btn" onclick="manualZoom(0.7)" title="Zoom out">−</button>
-      <button class="zoom-btn" onclick="resetZoom()" title="Reset" style="font-size:13px;">⌂</button>
+      <button class="zoom-btn" onclick="manualZoom(1.5)" title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="manualZoom(0.67)" title="Zoom out">−</button>
+      <button class="zoom-btn" onclick="goNational()" title="Reset to U.S." style="font-size:13px;">⌂</button>
     </div>
   </div>
   <div id="panel">
-    <div id="panel-header">
+    <div id="panel-header" style="position:relative;">
       <button id="panel-close" onclick="closePanel()">✕</button>
       <h2 id="panel-title"></h2>
       <p id="panel-sub"></p>
@@ -163,251 +163,308 @@ svg { width: 100%; height: 100%; }
 <script>
 const FDI = {"states": {"PR": {"name": "Puerto Rico", "projects": 1, "jobs": 49, "capex": 46.6, "companies": ["PharmaEssentia"], "sectors": ["Biotechnology"], "cities": []}, "AL": {"name": "Alabama", "projects": 1, "jobs": 1325, "capex": 430.0, "companies": ["Minth Group"], "sectors": ["Automotive components"], "cities": ["Gadsden (AL)"]}, "AZ": {"name": "Arizona", "projects": 22, "jobs": 25016, "capex": 165889.4, "companies": ["Aerospace Industrial Development Corp (AIDC)", "Aide Solar", "Bank of Taiwan", "Chang Chun Group", "E&R Engineering", "Foxlink Arizona", "Highlight Tech Corp. (HTC)", "LCY Chemical (Lee Chang Yung Chemical Industry)", "Sunlit Chemical", "Taiwan Semiconductor Manufacturing (TSMC)", "WPG Americas", "Wan Hai"], "sectors": ["Aerospace", "Chemicals", "Electronic components", "Financial services", "Industrial equipment", "Semiconductors", "Transportation & Warehousing"], "cities": ["Casa Grande (AZ)", "Phoenix (AZ)", "Scottsdale (AZ)", "Tempe (AZ)"]}, "KY": {"name": "Kentucky", "projects": 2, "jobs": 195, "capex": 174.2, "companies": ["Hon Hai Precision Industry (Foxconn)", "Sunspring America"], "sectors": ["Consumer electronics", "Industrial equipment"], "cities": ["Henderson (KY)", "Louisville (KY)"]}, "CO": {"name": "Colorado", "projects": 3, "jobs": 574, "capex": 65.6, "companies": ["Giant Manufacturing (Giant Bicycles)", "KIOSKInformationSystems", "Sercomm"], "sectors": ["Business machines & equipment", "Communications", "Non-automotive transport OEM"], "cities": ["Boulder (CO)", "Denver (CO)", "Thornton (CO)"]}, "KS": {"name": "Kansas", "projects": 2, "jobs": 234, "capex": 37.5, "companies": ["Apogee Power", "Hi-Lo Systems"], "sectors": ["Electronic components", "Software & IT services"], "cities": ["Liberal (KS)", "Manhattan (KS)"]}, "MD": {"name": "Maryland", "projects": 1, "jobs": 17, "capex": 15.0, "companies": ["Bora Pharmaceuticals"], "sectors": ["Pharmaceuticals"], "cities": ["Baltimore (MD)"]}, "TX": {"name": "Texas", "projects": 43, "jobs": 9152, "capex": 15269.0, "companies": ["Astrogate", "Bafang Dumpling", "BenQ America Corp", "Borrego Solar Systems", "CHT Global", "CTBC Bank (Chinatrust Commercial Bank)", "CipherLab", "Compal USA", "Delta Electronics (Delta Group)", "Diversified Labeling Solutions", "E.Sun Commercial Bank", "Eatery Essentials", "Formosa Plastics Corporation USA (FPCUSA)", "Formosa Plastics Group (FPG)", "Foxconn Assembly", "GlobalWafers", "GlobiTech", "HTC Global Services", "Ingrasys Technology USA", "Inventec", "Lite-On Tech", "Noodoe Inc", "Pegatron", "Q-Edge", "SMS Infocomm Corporation", "Shenmao Technology", "Sysgration", "TSRC", "TYG Products", "Wistron", "Wistron GreenTech", "Wistron InfoComm (USA)", "Wistron Infocomm (Texas)", "Wiwynn Corporation"], "sectors": ["Automotive components", "Business machines & equipment", "Chemicals", "Coal, oil & gas", "Communications", "Consumer electronics", "Electronic components", "Financial services", "Food and Beverages", "Metals", "Paper, printing & packaging", "Plastics", "Renewable energy", "Semiconductors", "Software & IT services"], "cities": ["Arlington (TX)", "Dallas (TX)", "Fort Worth (TX)", "Georgetown (TX)", "Grapevine (TX)", "Houston (TX)", "Katy (TX)", "McKinney (TX)", "Plano (TX)", "Point Comfort (TX)", "Sherman (TX)", "Socorro (TX)", "Taylor (TX)"]}, "WI": {"name": "Wisconsin", "projects": 7, "jobs": 4514, "capex": 1552.7, "companies": ["Hon Hai Precision Industry (Foxconn)", "Ta Chen International"], "sectors": ["Automotive OEM", "Business machines & equipment", "Communications", "Electronic components", "Metals", "Software & IT services"], "cities": ["Green Bay (WI)", "Milwaukee (WI)", "Mount Pleasant (WI)", "Pleasant Prairie (WI)", "Racine (WI)"]}, "WA": {"name": "Washington", "projects": 5, "jobs": 387, "capex": 647.2, "companies": ["Dimerco Express", "High Tech Computer (HTC)", "Johnson Health Tech North America", "Marine Town", "Synology"], "sectors": ["Communications", "Consumer products", "Electronic components", "Transportation & Warehousing"], "cities": ["Anacortes (WA)", "Seattle (WA)", "Vancouver (WA)"]}, "CA": {"name": "California", "projects": 52, "jobs": 4218, "capex": 1457.7, "companies": ["AAEON Technology", "ADLINK Technology", "ASUStek", "Acer", "Advanced Semiconductor Engineering (ASE)", "Advantech", "Alchip Technologies", "Andes Technology USA", "Appier", "Bank of Taiwan", "Bestec Power Electronics", "Bora Biologics", "CHT Global", "Comtrend", "CreatorDB", "Delta Electronics (Delta Group)", "Dimerco Customs Brokerage Services", "Dimerco Express", "EVA Airways", "EverTrust Bank", "Federal Tire", "Foxsemicon Integrated Technology", "Getac Technology Corporation (Getac)", "Godex International Co Ltd", "Hansun", "High Tech Computer (HTC)", "Hon Hai Precision Industry (Foxconn)", "Institute Technology Research Insitute (ITRI)", "Leotek Electronics", "MSSCorps", "Maxzone Auto Parts", "MediaTek", "MiTwell", "Micro-Star International (MSI)", "Mitac", "Neco Parts", "PUFsecurity", "Papago", "Pegatron", "Posiflex", "Quanta Computer", "Shenmao Technology", "Solomon", "Taiwan Realty", "Viscotec-US, Inc.", "Vivotek USA"], "sectors": ["Automotive components", "Business machines & equipment", "Business services", "Communications", "Consumer electronics", "Electronic components", "Financial services", "Industrial equipment", "Metals", "Non-automotive transport OEM", "Pharmaceuticals", "Plastics", "Real estate", "Rubber", "Semiconductors", "Software & IT services", "Transportation & Warehousing"], "cities": ["Brea (CA)", "Camarillo (CA)", "City of Industry (CA)", "Costa Mesa (CA)", "Eastvale (CA)", "Fontana (CA)", "Fremont (CA)", "Hayward (CA)", "Irvine (CA)", "Lake Forest (CA)", "Los Angeles (CA)", "Los Gatos (CA)", "Milpitas (CA)", "Ontario (CA)", "Pasadena (CA)", "Rowland Heights (CA)", "Sacramento (CA)", "San Diego (CA)", "San Francisco (CA)", "San Jose (CA)", "Santa Clara (CA)", "Sunnyvale (CA)", "Torrance (CA)", "Tulare (CA)", "Tustin (CA)", "Union City (CA)", "Walnut (CA)"]}, "OR": {"name": "Oregon", "projects": 4, "jobs": 458, "capex": 255.2, "companies": ["Allion Test Labs", "Andes Technology USA", "E&R Engineering", "Insyde Software"], "sectors": ["Semiconductors", "Software & IT services"], "cities": ["Hillsboro (OR)", "Portland (OR)"]}, "MN": {"name": "Minnesota", "projects": 1, "jobs": 138, "capex": 115.5, "companies": ["Bora Pharmaceuticals"], "sectors": ["Pharmaceuticals"], "cities": ["Maple Grove (MN)"]}, "OH": {"name": "Ohio", "projects": 7, "jobs": 1040, "capex": 401.3, "companies": ["American Kenda Rubber Industrial", "Foxconn EV Systems", "Hon Hai Precision Industry (Foxconn)", "Morrison Express Corporation (USA)", "Sinbon Electronics"], "sectors": ["Automotive OEM", "Business machines & equipment", "Electronic components", "Rubber", "Transportation & Warehousing"], "cities": ["Akron (OH)", "Clayton (OH)", "Columbus (OH)", "Green (OH)", "Lordstown (OH)"]}, "SC": {"name": "South Carolina", "projects": 3, "jobs": 163, "capex": 39.9, "companies": ["Delta Power Equipment", "Eurocharm", "Norman International"], "sectors": ["Consumer products", "Industrial equipment", "Metals"], "cities": ["Beaufort (SC)", "Lugoff (SC)", "Spartanburg (SC)"]}, "MI": {"name": "Michigan", "projects": 7, "jobs": 800, "capex": 271.1, "companies": ["Excellence Optoelectronics", "HTC Global Services", "Rosta International", "Sumeeko", "TYC Americas", "Tung Thih Electronic"], "sectors": ["Automotive components", "Electronic components", "Metals", "Software & IT services"], "cities": ["Dundee (MI)", "Fraser (MI)", "Northville (MI)", "Troy (MI)", "Wixom (MI)"]}, "NC": {"name": "North Carolina", "projects": 6, "jobs": 818, "capex": 53.5, "companies": ["Anderson America", "Everest Textile", "High Tech Computer (HTC)", "Kingwhale", "Smart Electric Works", "Syntec Precision Technology"], "sectors": ["Communications", "Electronic components", "Industrial equipment", "Textiles"], "cities": ["Charlotte (NC)", "Conover (NC)", "Durham (NC)", "Henderson (NC)"]}, "GA": {"name": "Georgia", "projects": 5, "jobs": 250, "capex": 162.4, "companies": ["Castles Technology", "Diversified Labeling Solutions", "Maxzone Auto Parts", "Shini Plastics Technologies", "SunMax Tech"], "sectors": ["Automotive components", "Business machines & equipment", "Electronic components", "Industrial equipment", "Paper, printing & packaging"], "cities": ["Adairsville (GA)", "Atlanta (GA)", "Duluth (GA)", "Norcross (GA)", "Suwanee (GA)"]}, "MA": {"name": "Massachusetts", "projects": 10, "jobs": 387, "capex": 347.7, "companies": ["Advantech", "Allion Test Labs", "Borrego Solar Systems", "Gloria Solar", "MediaTek", "Minmax Technology", "PharmaEssentia", "Syncell", "WPG Americas"], "sectors": ["Biotechnology", "Business machines & equipment", "Electronic components", "Industrial equipment", "Renewable energy", "Semiconductors", "Software & IT services"], "cities": ["Andover (MA)", "Bedford (MA)", "Boston (MA)", "Danvers (MA)", "Hudson (MA)", "Watertown (MA)", "Wilmington (MA)", "Woburn (MA)"]}, "NM": {"name": "New Mexico", "projects": 5, "jobs": 1036, "capex": 369.3, "companies": ["Admiral Cable", "BizLink Technology", "Cymmetrik", "Hota Industrial", "Xxentria Technology Materials"], "sectors": ["Automotive components", "Electronic components", "Metals", "Paper, printing & packaging"], "cities": ["Santa Teresa (NM)"]}, "IN": {"name": "Indiana", "projects": 4, "jobs": 1811, "capex": 45.8, "companies": ["ASUStek", "Hon Hai Precision Industry (Foxconn)", "Maxxis USA", "MediaTek"], "sectors": ["Business machines & equipment", "Rubber", "Semiconductors"], "cities": ["Jeffersonville (IN)", "Lebanon (IN)", "Plainfield (IN)", "West Lafayette (IN)"]}, "IL": {"name": "Illinois", "projects": 5, "jobs": 641, "capex": 188.5, "companies": ["Advantech", "Dimerco Customs Brokerage Services", "Diversified Labeling Solutions", "Quality Craft", "WPG Americas"], "sectors": ["Business machines & equipment", "Consumer products", "Paper, printing & packaging", "Semiconductors", "Transportation & Warehousing"], "cities": ["Chicago (IL)", "Downers Grove (IL)", "Itasca (IL)", "Romeoville (IL)", "Schaumburg (IL)"]}, "NV": {"name": "Nevada", "projects": 1, "jobs": 91, "capex": 78.4, "companies": ["Diversified Labeling Solutions"], "sectors": ["Paper, printing & packaging"], "cities": ["Reno (NV)"]}, "DE": {"name": "Delaware", "projects": 2, "jobs": 167, "capex": 47.8, "companies": ["Bora Pharmaceuticals", "Motech Industries"], "sectors": ["Electronic components", "Pharmaceuticals"], "cities": ["Newark (DE)"]}, "ID": {"name": "Idaho", "projects": 1, "jobs": 25, "capex": 17.4, "companies": ["Jetton Biochemistry"], "sectors": ["Food and Beverages"], "cities": ["Nampa (ID)"]}, "NJ": {"name": "New Jersey", "projects": 6, "jobs": 301, "capex": 169.4, "companies": ["DingZing Advanced Materials", "Ge Mao Rubber Industrial (GMORS)", "Genera", "Innodisk", "Maxzone Auto Parts", "Wistron NeWeb Corporation"], "sectors": ["Automotive components", "Business machines & equipment", "Plastics", "Rubber", "Transportation & Warehousing"], "cities": ["Cranbury (NJ)", "Newark (NJ)", "Secaucus (NJ)"]}, "CT": {"name": "Connecticut", "projects": 1, "jobs": 76, "capex": 8.3, "companies": ["Conning"], "sectors": ["Financial services"], "cities": ["Hartford (CT)"]}, "VA": {"name": "Virginia", "projects": 1, "jobs": 31, "capex": 2.5, "companies": ["TQ Technology"], "sectors": ["Electronic components"], "cities": ["Chesapeake (VA)"]}, "FL": {"name": "Florida", "projects": 7, "jobs": 794, "capex": 126.3, "companies": ["ADATA Technology", "Ciber", "Hon Hai Precision Industry (Foxconn)", "SHL Pharma", "Scandinavian Health (SHL)"], "sectors": ["Business machines & equipment", "Communications", "Medical devices", "Plastics", "Software & IT services"], "cities": ["Deerfield Beach (FL)", "Doral (FL)", "Orlando (FL)", "Sunrise (FL)"]}, "LA": {"name": "Louisiana", "projects": 2, "jobs": 1251, "capex": 9514.5, "companies": ["Formosa Petrochemical", "Formosa Plastics Group (FPG)"], "sectors": ["Chemicals", "Plastics"], "cities": ["Baton Rouge (LA)"]}, "NY": {"name": "New York", "projects": 5, "jobs": 151, "capex": 40.2, "companies": ["Bank of Taiwan", "Regent Hotels & Resorts", "Taiwan Business Bank", "Taiwan Cooperative Bank", "WPG Americas"], "sectors": ["Financial services", "Hotels & tourism", "Semiconductors"], "cities": ["NYC (NY)"]}, "TN": {"name": "Tennessee", "projects": 5, "jobs": 523, "capex": 52.5, "companies": ["KHS America", "Quanta Computer", "Wei-Chuan USA"], "sectors": ["Business machines & equipment", "Consumer products", "Food and Beverages"], "cities": ["La Vergne (TN)", "Mt Juliet (TN)", "Murfreesboro (TN)", "Nashville (TN)"]}, "PA": {"name": "Pennsylvania", "projects": 1, "jobs": 164, "capex": 30.0, "companies": ["Hon Hai Precision Industry (Foxconn)"], "sectors": ["Communications"], "cities": ["Harrisburg (PA)"]}, "NH": {"name": "New Hampshire", "projects": 1, "jobs": 38, "capex": 5.7, "companies": ["Infortrend Technology"], "sectors": ["Software & IT services"], "cities": ["Nashua (NH)"]}, "MS": {"name": "Mississippi", "projects": 1, "jobs": 60, "capex": 1.5, "companies": ["WPG Americas"], "sectors": ["Semiconductors"], "cities": ["Southaven (MS)"]}}, "cities": [{"city": "Gadsden (AL)", "state": "Alabama", "lat": 33.9951, "lng": -86.0066, "jobs": 1325, "capex": 430.0, "count": 1, "sectors": ["Automotive components"], "companies": [{"name": "Minth Group", "website": "www.minthgroup.com", "sector": "Automotive components", "activity": "Manufacturing", "jobs": 1325, "capex": 430.0, "source": "https://www.minthgroup.com/ENG/contents/113/1170.html"}]}, {"city": "Casa Grande (AZ)", "state": "Arizona", "lat": 32.8795, "lng": -111.7574, "jobs": 251, "capex": 414.0, "count": 2, "sectors": ["Chemicals"], "companies": [{"name": "Sunlit Chemical", "website": "sunlit-chemical.com/", "sector": "Chemicals", "activity": "Manufacturing", "jobs": 51, "capex": 114.0, "source": "https://eu.azcentral.com/story/money/business/tech/2026/01/16/tsmc-supplier-flocks-to-casa-grande-growing-arizona-industry/88197852007/"}, {"name": "Chang Chun Group", "website": "www.ccp.com.tw", "sector": "Chemicals", "activity": "Manufacturing", "jobs": 200, "capex": 300.0, "source": "https://www.areadevelopment.com/newsItems/10-26-2022/chang-chun-casa-grande-arizona.shtml"}]}, {"city": "Louisville (KY)", "state": "Kentucky", "lat": 38.2527, "lng": -85.7585, "jobs": 180, "capex": 173.0, "count": 1, "sectors": ["Consumer electronics"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Consumer electronics", "activity": "Manufacturing", "jobs": 180, "capex": 173.0, "source": "https://louisvilleky.gov/news/mayor-greenberg-announces-foxconn-invest-173-million-new-consumer-electronic-manufacturing"}]}, {"city": "Boulder (CO)", "state": "Colorado", "lat": 40.015, "lng": -105.2705, "jobs": 95, "capex": 10.9, "count": 1, "sectors": ["Non-automotive transport OEM"], "companies": [{"name": "Giant Manufacturing (Giant Bicycles)", "website": "www.giant-bicycles.com", "sector": "Non-automotive transport OEM", "activity": "Headquarters", "jobs": 95, "capex": 10.9, "source": "https://www.bizjournals.com/denver/news/2025/12/08/giant-group-boulder-biking-cycling.html"}]}, {"city": "Liberal (KS)", "state": "Kansas", "lat": 37.0431, "lng": -100.9237, "jobs": 80, "capex": 16.0, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Apogee Power", "website": "apogeepower.com.tw/en/home-en/", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 80, "capex": 16.0, "source": "https://www.kansascommerce.gov/2026/04/taiwanese-battery-manufacturer-selects-liberal-for-new-u-s-facility/"}]}, {"city": "Baltimore (MD)", "state": "Maryland", "lat": 39.2904, "lng": -76.6122, "jobs": 17, "capex": 15.0, "count": 1, "sectors": ["Pharmaceuticals"], "companies": [{"name": "Bora Pharmaceuticals", "website": "boracdmo.com/", "sector": "Pharmaceuticals", "activity": "Manufacturing", "jobs": 17, "capex": 15.0, "source": "https://business.maryland.gov/news/bora-pharmaceuticals-reinvests-in-baltimore-facility/"}]}, {"city": "Dallas (TX)", "state": "Texas", "lat": 32.7767, "lng": -96.797, "jobs": 833, "capex": 326.5, "count": 6, "sectors": ["Business machines & equipment", "Communications", "Electronic components", "Financial services", "Plastics"], "companies": [{"name": "E.Sun Commercial Bank", "website": "www.esunfhc.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": "https://www.businesswire.com/news/home/20251103583646/en/E.SUN-Bank-Opens-Dallas-Office-Connecting-Taiwans-Financial-Strength-to-Texass-Innovation-Surge"}, {"name": "CHT Global", "website": "www.cht.com.tw", "sector": "Communications", "activity": "Sales, Marketing & Support", "jobs": 54, "capex": 15.5, "source": "https://www.digitimes.com/news/a20250508PD229/cht-usa-expansion-texas-subsidiary-market.html"}, {"name": "Wistron InfoComm (USA)", "website": "www.wistron.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 269, "capex": 111.0, "source": "https://www.wistron.com/en/Newsroom/2025-05-06"}, {"name": "SMS Infocomm Corporation", "website": "www.wistron.com", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 101, "capex": 12.88, "source": "https://www.wistron.com/en/Newsroom/2025-05-06"}, {"name": "Lite-On Tech", "website": "www.liteon.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 218, "capex": 151.4, "source": "https://lcdproduct.com/lite-on-expects-us314-million-in-value-from-vietnam-plant-amid-imminent-dallas-plant-launch/"}, {"name": "Eatery Essentials", "website": "www.vigourpack.com/en/", "sector": "Plastics", "activity": "Headquarters", "jobs": 150, "capex": 23.4, "source": "https://eateryessentials.com/2020/06/10/incidunt-itaque-culpa-ut-deleniti/"}]}, {"city": "Racine (WI)", "state": "Wisconsin", "lat": 42.7261, "lng": -87.7829, "jobs": 1374, "capex": 569.0, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 1374, "capex": 569.0, "source": "https://www.foxconn.com/zh-tw/press-center/press-releases/latest-news/1919"}]}, {"city": "Georgetown (TX)", "state": "Texas", "lat": 30.6333, "lng": -97.6775, "jobs": 150, "capex": 48.3, "count": 2, "sectors": ["Business machines & equipment", "Communications"], "companies": [{"name": "Compal USA", "website": "www.compal.com", "sector": "Communications", "activity": "Maintenance & Servicing", "jobs": 50, "capex": 13.3, "source": "https://www.compal.com/esg/en/news/compal-electronics-announce-strategic-investm/"}, {"name": "Pegatron", "website": "www.pegatroncorp.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 100, "capex": 35.0, "source": "https://www.connectcre.com/stories/taiwanese-electronics-maker-commits-to-35m-georgetown-factory/"}]}, {"city": "Taylor (TX)", "state": "Texas", "lat": 30.5707, "lng": -97.4097, "jobs": 220, "capex": 56.4, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Compal USA", "website": "www.compal.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 220, "capex": 56.4, "source": "https://www.compal.com/esg/en/news/compal-electronics-announce-strategic-investm/"}]}, {"city": "Thornton (CO)", "state": "Colorado", "lat": 39.868, "lng": -104.9719, "jobs": 140, "capex": 16.3, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "KIOSKInformationSystems", "website": "www.posiflex.com.tw", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 140, "capex": 16.3, "source": "https://www.prnewswire.com/news-releases/kiosk-information-systems-to-relocate-headquarters-to-thornton-colorado-302593993.html"}]}, {"city": "Denver (CO)", "state": "Colorado", "lat": 39.7392, "lng": -104.9903, "jobs": 339, "capex": 38.4, "count": 1, "sectors": ["Communications"], "companies": [{"name": "Sercomm", "website": "www.sercomm.com", "sector": "Communications", "activity": "Research & Development", "jobs": 339, "capex": 38.4, "source": "https://www.sercomm.com/en/news/3/423"}]}, {"city": "Vancouver (WA)", "state": "Washington", "lat": 45.6387, "lng": -122.6615, "jobs": 166, "capex": 120.1, "count": 1, "sectors": ["Consumer products"], "companies": [{"name": "Johnson Health Tech North America", "website": "www.johnsonfitness.com", "sector": "Consumer products", "activity": "Sales, Marketing & Support", "jobs": 166, "capex": 120.1, "source": "https://www.linkedin.com/posts/beckyquick1_bowflex-johnsonhealthtech-businessgrowth-activity-7375923686891204608-XU0i?utm_source=share&utm_medium=member_desktop&rcm=ACoAADdRKUQBGS0euR_VrnF8SSAQjlTEcUyhu1k"}]}, {"city": "Los Angeles (CA)", "state": "California", "lat": 34.0522, "lng": -118.2437, "jobs": 159, "capex": 24.1, "count": 4, "sectors": ["Communications", "Real estate", "Software & IT services", "Transportation & Warehousing"], "companies": [{"name": "CreatorDB", "website": "www.creatordb.app/", "sector": "Software & IT services", "activity": "Sales, Marketing & Support", "jobs": 56, "capex": 11.6, "source": "https://www.finsmes.com/2025/09/creatordb-raises-4-7m-in-series-a-funding.html"}, {"name": "Taiwan Realty", "website": "www.twhg.com.tw", "sector": "Real estate", "activity": "Business Services", "jobs": 12, "capex": 2.0, "source": ""}, {"name": "Dimerco Customs Brokerage Services", "website": "www.dimerco.com", "sector": "Transportation & Warehousing", "activity": "Sales, Marketing & Support", "jobs": 53, "capex": 5.4, "source": ""}, {"name": "CHT Global", "website": "www.cht.com.tw", "sector": "Communications", "activity": "Sales, Marketing & Support", "jobs": 38, "capex": 5.1, "source": ""}]}, {"city": "Santa Clara (CA)", "state": "California", "lat": 37.3541, "lng": -121.9552, "jobs": 155, "capex": 21.0, "count": 2, "sectors": ["Business machines & equipment"], "companies": [{"name": "Acer", "website": "www.acer-group.com", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 140, "capex": 16.3, "source": "https://www.prnewswire.com/news-releases/acer-to-celebrate-grand-opening-of-its-new-pan-america-headquarters-in-santa-clara-302556434.html"}, {"name": "Pegatron", "website": "www.pegatroncorp.com", "sector": "Business machines & equipment", "activity": "Business Services", "jobs": 15, "capex": 4.7, "source": "https://svr.pegatroncorp.com/News/11"}]}, {"city": "Phoenix (AZ)", "state": "Arizona", "lat": 33.4484, "lng": -112.074, "jobs": 9593, "capex": 68341.5, "count": 12, "sectors": ["Aerospace", "Chemicals", "Electronic components", "Financial services", "Industrial equipment", "Semiconductors"], "companies": [{"name": "E&R Engineering", "website": "en.enr.com.tw/", "sector": "Semiconductors", "activity": "Research & Development", "jobs": 107, "capex": 106.4, "source": "https://www.prnewswire.com/news-releases/er-strengthens-north-american-semiconductor-presence-with-new-us-subsidiary-302566654.html"}, {"name": "Taiwan Semiconductor Manufacturing (TSMC)", "website": "www.tsmc.com.tw", "sector": "Semiconductors", "activity": "Research & Development", "jobs": 3000, "capex": 3000.0, "source": "https://pr.tsmc.com/english/news/3210"}, {"name": "Aerospace Industrial Development Corp (AIDC)", "website": "www.aidc.com.tw/en/", "sector": "Aerospace", "activity": "Manufacturing", "jobs": 140, "capex": 76.3, "source": "https://www.taiwannews.com.tw/news/5921679"}, {"name": "Foxlink Arizona", "website": "", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 100, "capex": 20.0, "source": "https://www.areadevelopment.com/newsItems/8-1-2024/foxlink-phoenix-arizona.shtml"}, {"name": "Taiwan Semiconductor Manufacturing (TSMC)", "website": "www.tsmc.com.tw", "sector": "Semiconductors", "activity": "Manufacturing", "jobs": 1100, "capex": 25000.0, "source": "https://pr.tsmc.com/english/news/3122"}, {"name": "Highlight Tech Corp. (HTC)", "website": "www.htcvacuum.com/en-global", "sector": "Industrial equipment", "activity": "Headquarters", "jobs": 67, "capex": 18.7, "source": "https://www.globenewswire.com/news-release/2023/06/12/2686114/0/en/Highlight-Tech-Corp-HTC-Announces-Entry-into-US-Market-to-Address-Rapid-Semiconductor-Fab-Growth.html"}, {"name": "Taiwan Semiconductor Manufacturing (TSMC)", "website": "www.tsmc.com.tw", "sector": "Semiconductors", "activity": "Manufacturing", "jobs": 3000, "capex": 28000.0, "source": "https://www.ft.com/content/f098bf3f-1ec6-4433-b4e2-fc1acde05628"}, {"name": "Bank of Taiwan", "website": "www.twfhc.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": "https://www.taiwannews.com.tw/en/news/4577540"}, {"name": "Sunlit Chemical", "website": "sunlit-chemical.com/", "sector": "Chemicals", "activity": "Manufacturing", "jobs": 100, "capex": 100.0, "source": "https://www.areadevelopment.com/newsitems/1-21-2022/sunlit-chemical-phoenix-arizona.shtml"}, {"name": "Taiwan Semiconductor Manufacturing (TSMC)", "website": "www.tsmc.com.tw", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": "https://www.bizjournals.com/phoenix/news/2020/12/28/taiwan-semiconductor-signs-phoenix-office-lease.html"}, {"name": "Taiwan Semiconductor Manufacturing (TSMC)", "website": "www.tsmc.com.tw", "sector": "Semiconductors", "activity": "Manufacturing", "jobs": 1900, "capex": 12000.0, "source": "https://www.bizjournals.com/phoenix/news/2020/12/28/taiwan-semiconductor-signs-phoenix-office-lease.html"}, {"name": "WPG Americas", "website": "www.wpgholdings.com", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": ""}]}, {"city": "Portland (OR)", "state": "Oregon", "lat": 45.5051, "lng": -122.675, "jobs": 319, "capex": 229.5, "count": 3, "sectors": ["Semiconductors", "Software & IT services"], "companies": [{"name": "E&R Engineering", "website": "en.enr.com.tw/", "sector": "Semiconductors", "activity": "Research & Development", "jobs": 107, "capex": 106.4, "source": "https://www.prnewswire.com/news-releases/er-strengthens-north-american-semiconductor-presence-with-new-us-subsidiary-302566654.html"}, {"name": "Andes Technology USA", "website": "andestech.com/", "sector": "Semiconductors", "activity": "Research & Development", "jobs": 107, "capex": 106.4, "source": "http://www.andestech.com/en/2021/10/08/usa_expansion/"}, {"name": "Allion Test Labs", "website": "www.allion.com", "sector": "Software & IT services", "activity": "Research & Development", "jobs": 105, "capex": 16.7, "source": ""}]}, {"city": "Costa Mesa (CA)", "state": "California", "lat": 33.6411, "lng": -117.9187, "jobs": 37, "capex": 33.8, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "MiTwell", "website": "www.mitwell.com.tw/", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 37, "capex": 33.8, "source": "https://www.cbs17.com/business/press-releases/globenewswire/9512386/mitwell-announces-opening-of-new-costa-mesa-office-to-support-the-north-american-market/"}]}, {"city": "Maple Grove (MN)", "state": "Minnesota", "lat": 45.0725, "lng": -93.4558, "jobs": 138, "capex": 115.5, "count": 1, "sectors": ["Pharmaceuticals"], "companies": [{"name": "Bora Pharmaceuticals", "website": "boracdmo.com/", "sector": "Pharmaceuticals", "activity": "Manufacturing", "jobs": 138, "capex": 115.5, "source": "https://bora-corp.com/bora-pharmaceuticals-announces-multi-year-expansion-for-midwest-manufacturing-site-as-upsher-smith-entity-split-is-finalized/"}]}, {"city": "Fort Worth (TX)", "state": "Texas", "lat": 32.7555, "lng": -97.3308, "jobs": 1300, "capex": 930.9, "count": 3, "sectors": ["Business machines & equipment", "Electronic components"], "companies": [{"name": "Wistron", "website": "www.wistron.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 610, "capex": 580.0, "source": "https://dallasinnovates.com/761m-project-wistron-selects-fort-worths-alliancetexas-for-two-ai-supercomputing-facilities/"}, {"name": "Wistron", "website": "www.wistron.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 190, "capex": 181.0, "source": "https://dallasinnovates.com/761m-project-wistron-selects-fort-worths-alliancetexas-for-two-ai-supercomputing-facilities/"}, {"name": "Q-Edge", "website": "www.foxconn.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 500, "capex": 169.9, "source": ""}]}, {"city": "Clayton (OH)", "state": "Ohio", "lat": 39.8609, "lng": -84.3336, "jobs": 140, "capex": 8.5, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Sinbon Electronics", "website": "www.sinbon.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 140, "capex": 8.5, "source": "https://www.sinbon.com/news/sinbon-doubles-us-manufacturing-footprint-to-meet-growing-demand-in-industrial-robotics-automotive-and-renewable-energy-sectors-"}]}, {"city": "Lugoff (SC)", "state": "South Carolina", "lat": 34.2223, "lng": -80.6834, "jobs": 46, "capex": 12.0, "count": 1, "sectors": ["Metals"], "companies": [{"name": "Eurocharm", "website": "www.eurocharm.com.tw/en", "sector": "Metals", "activity": "Manufacturing", "jobs": 46, "capex": 12.0, "source": "https://www.areadevelopment.com/newsItems/7-10-2025/eurocharm-group-lugoff-south-carolina.shtml"}]}, {"city": "San Diego (CA)", "state": "California", "lat": 32.7157, "lng": -117.1611, "jobs": 157, "capex": 119.4, "count": 2, "sectors": ["Pharmaceuticals", "Semiconductors"], "companies": [{"name": "Bora Biologics", "website": "www.tanvex.com/", "sector": "Pharmaceuticals", "activity": "Manufacturing", "jobs": 138, "capex": 115.5, "source": "https://www.biospectrumasia.com/news/40/26084/taiwans-bora-biologics-expands-manufacturing-facility-in-us.html"}, {"name": "MediaTek", "website": "www.mediatek.com", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": ""}]}, {"city": "Houston (TX)", "state": "Texas", "lat": 29.7604, "lng": -95.3698, "jobs": 1024, "capex": 278.0, "count": 4, "sectors": ["Electronic components", "Financial services", "Semiconductors"], "companies": [{"name": "CTBC Bank (Chinatrust Commercial Bank)", "website": "www.chinatrustgroup.com", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": "https://www.taipeitimes.com/News/biz/archives/2025/04/24/2003835702"}, {"name": "Ingrasys Technology USA", "website": "www.foxconn.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 600, "capex": 20.0, "source": "https://www.chron.com/business/article/ingrasys-tech-houston-foxconn-apple-20323442.php"}, {"name": "Foxconn Assembly", "website": "www.foxconn.com", "sector": "Semiconductors", "activity": "Manufacturing", "jobs": 300, "capex": 225.0, "source": "https://www.bizjournals.com/houston/news/2025/02/24/apple-open-houston-server-manufacturing-facility.html"}, {"name": "Noodoe Inc", "website": "www.noodoe.com/", "sector": "Electronic components", "activity": "Headquarters", "jobs": 83, "capex": 20.7, "source": "https://www.noodoe.com/blog/2022/01/21/noodoe-ev-opens-new-headquarters-in-houston/"}]}, {"city": "Plano (TX)", "state": "Texas", "lat": 33.0198, "lng": -96.6989, "jobs": 1363, "capex": 639.4, "count": 9, "sectors": ["Automotive components", "Consumer electronics", "Electronic components", "Software & IT services"], "companies": [{"name": "Delta Electronics (Delta Group)", "website": "www.deltaww.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 218, "capex": 151.4, "source": "https://www.mysanantonio.com/business/article/delta-electronics-plano-20254702.php"}, {"name": "Delta Electronics (Delta Group)", "website": "www.deltaww.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 279, "capex": 115.0, "source": "https://www.mysanantonio.com/business/article/delta-electronics-plano-20254702.php"}, {"name": "Delta Electronics (Delta Group)", "website": "www.deltaww.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 218, "capex": 151.4, "source": "https://businessfacilities.com/delta-electronics-expands-texas-campus-will-hire-1500/"}, {"name": "Sysgration", "website": "www.sysgration.com/en/", "sector": "Automotive components", "activity": "Manufacturing", "jobs": 152, "capex": 43.1, "source": "https://www.bizjournals.com/dallas/news/2024/02/14/sysgration-plano-150-jobs.html"}, {"name": "HTC Global Services", "website": "www.htc.com.tw", "sector": "Software & IT services", "activity": "Business Services", "jobs": 98, "capex": 5.4, "source": "https://www.htcinc.com/latest-news/htc-global-services-opens-a-new-office-in-the-us-to-support-growth/"}, {"name": "Astrogate", "website": "www.astrogate.com", "sector": "Software & IT services", "activity": "Sales, Marketing & Support", "jobs": 56, "capex": 11.6, "source": "https://www.astrogate.com/event/new-branch-office-opening-visit-astrogate-in-the-u-s/"}, {"name": "Delta Electronics (Delta Group)", "website": "www.deltaww.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 218, "capex": 151.4, "source": "https://evertiq.com/news/52142"}, {"name": "BenQ America Corp", "website": "www.benq.com", "sector": "Consumer electronics", "activity": "Sales, Marketing & Support", "jobs": 43, "capex": 3.4, "source": ""}, {"name": "CipherLab", "website": "www.cipherlab.com", "sector": "Software & IT services", "activity": "Headquarters", "jobs": 81, "capex": 6.7, "source": ""}]}, {"city": "Lordstown (OH)", "state": "Ohio", "lat": 41.1717, "lng": -80.8575, "jobs": 58, "capex": 26.0, "count": 1, "sectors": ["Automotive OEM"], "companies": [{"name": "Foxconn EV Systems", "website": "www.foxconn.com", "sector": "Automotive OEM", "activity": "Manufacturing", "jobs": 58, "capex": 26.0, "source": "https://www.bizjournals.com/cleveland/news/2025/04/23/foxconn-to-invest-26-million-in-ohio-ev-subsidiary.html"}]}, {"city": "City of Industry (CA)", "state": "California", "lat": 34.0153, "lng": -117.9581, "jobs": 163, "capex": 20.7, "count": 2, "sectors": ["Business machines & equipment", "Industrial equipment"], "companies": [{"name": "Micro-Star International (MSI)", "website": "www.msi.com.tw", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 140, "capex": 16.3, "source": "https://www.taipeitimes.com/News/biz/archives/2025/06/19/2003838840"}, {"name": "Solomon", "website": "www.solomon-3d.com/", "sector": "Industrial equipment", "activity": "Sales, Marketing & Support", "jobs": 23, "capex": 4.4, "source": "https://www.solomon-3d.com/a-new-branch-office-in-los-angeles-to-service-our-customers/"}]}, {"city": "Wixom (MI)", "state": "Michigan", "lat": 42.5245, "lng": -83.5363, "jobs": 109, "capex": 18.8, "count": 1, "sectors": ["Automotive components"], "companies": [{"name": "TYC Americas", "website": "www.tyc.com.tw", "sector": "Automotive components", "activity": "Manufacturing", "jobs": 109, "capex": 18.75, "source": "https://www.michiganbusiness.org/press-releases/2025/03/240-new-jobs-coming-to-kent-oakland-counties/"}]}, {"city": "Fraser (MI)", "state": "Michigan", "lat": 42.539, "lng": -82.9499, "jobs": 79, "capex": 64.5, "count": 1, "sectors": ["Metals"], "companies": [{"name": "Sumeeko", "website": "www.sumeeko.com/", "sector": "Metals", "activity": "Manufacturing", "jobs": 79, "capex": 64.5, "source": "https://www.michiganbusiness.org/press-releases/2024/03/michigan-taiwan-office/"}]}, {"city": "Socorro (TX)", "state": "Texas", "lat": 31.6543, "lng": -106.299, "jobs": 514, "capex": 152.0, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Wiwynn Corporation", "website": "www.wistron.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 514, "capex": 152.0, "source": "https://costx.us/2025/06/03/wiwynn-is-coming-to-socorro/"}]}, {"city": "Henderson (NC)", "state": "North Carolina", "lat": 36.3296, "lng": -78.41, "jobs": 34, "capex": 8.0, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "Syntec Precision Technology", "website": "www.syntecclub.com/default.aspx", "sector": "Industrial equipment", "activity": "Manufacturing", "jobs": 34, "capex": 8.0, "source": "https://governor.nc.gov/news/press-releases/2025/02/14/governor-stein-announces-8-million-investment-vance-county-precision-manufacturers-first-north"}]}, {"city": "Sherman (TX)", "state": "Texas", "lat": 33.6357, "lng": -96.6089, "jobs": 1970, "capex": 9000.0, "count": 2, "sectors": ["Semiconductors"], "companies": [{"name": "GlobalWafers", "website": "www.saswafer.com", "sector": "Semiconductors", "activity": "Manufacturing", "jobs": 470, "capex": 4000.0, "source": "https://www.sas-globalwafers.com/en/gwc_news_en_20250516/"}, {"name": "GlobiTech", "website": "www.saswafer.com", "sector": "Semiconductors", "activity": "Manufacturing", "jobs": 1500, "capex": 5000.0, "source": "https://businessfacilities.com/2022/06/globitech-semiconductor-expansion-1500-jobs-north-texas/"}]}, {"city": "Fremont (CA)", "state": "California", "lat": 37.5485, "lng": -121.9886, "jobs": 388, "capex": 160.8, "count": 3, "sectors": ["Business machines & equipment", "Communications", "Semiconductors"], "companies": [{"name": "Advanced Semiconductor Engineering (ASE)", "website": "www.aseglobal.com", "sector": "Semiconductors", "activity": "Research & Development", "jobs": 107, "capex": 106.4, "source": "https://asia.nikkei.com/Business/Technology/Top-chip-packager-ASE-to-build-additional-factories-in-U.S.-and-Mexico"}, {"name": "Quanta Computer", "website": "www.quantatw.com", "sector": "Business machines & equipment", "activity": "Research & Development", "jobs": 179, "capex": 24.8, "source": ""}, {"name": "Quanta Computer", "website": "www.quantatw.com", "sector": "Communications", "activity": "Headquarters", "jobs": 102, "capex": 29.6, "source": ""}]}, {"city": "Sunnyvale (CA)", "state": "California", "lat": 37.3688, "lng": -122.0363, "jobs": 23, "capex": 4.4, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "MSSCorps", "website": "www.msscorps.com/", "sector": "Industrial equipment", "activity": "Sales, Marketing & Support", "jobs": 23, "capex": 4.4, "source": "https://www.bizjournals.com/sanjose/news/2024/11/06/taiwan-semiconductor-sunnyvale-msscorp-expansion.html"}]}, {"city": "Adairsville (GA)", "state": "Georgia", "lat": 34.3646, "lng": -84.9316, "jobs": 82, "capex": 39.0, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "SunMax Tech", "website": "www.sun-max.com.tw/index_en.php", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 82, "capex": 39.0, "source": "https://locationofchoice.com/index.php/news/article/1047"}]}, {"city": "Northville (MI)", "state": "Michigan", "lat": 42.4312, "lng": -83.4835, "jobs": 55, "capex": 15.0, "count": 1, "sectors": ["Automotive components"], "companies": [{"name": "Tung Thih Electronic", "website": "www.tungthih.com.tw", "sector": "Automotive components", "activity": "Manufacturing", "jobs": 55, "capex": 15.0, "source": "https://www.michiganbusiness.org/press-releases/2024/03/michigan-taiwan-office/"}]}, {"city": "Tustin (CA)", "state": "California", "lat": 33.7458, "lng": -117.826, "jobs": 140, "capex": 16.3, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Advantech", "website": "www.advantech.com", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 140, "capex": 16.3, "source": "https://www.ocregister.com/2024/01/18/real-estate-news-taiwanese-computer-maker-signs-265m-lease-for-new-tustin-headquarters/"}]}, {"city": "Watertown (MA)", "state": "Massachusetts", "lat": 42.3668, "lng": -71.1826, "jobs": 23, "capex": 4.4, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "Syncell", "website": "www.syncell.com/company/", "sector": "Industrial equipment", "activity": "Sales, Marketing & Support", "jobs": 23, "capex": 4.4, "source": "https://www.businesswire.com/news/home/20231221684718/en/Syncell-Expands-Into-the-United-States-With-a-New-Office-in-Watertown-MA"}]}, {"city": "Santa Teresa (NM)", "state": "New Mexico", "lat": 31.8496, "lng": -106.6258, "jobs": 1036, "capex": 369.3, "count": 5, "sectors": ["Automotive components", "Electronic components", "Metals", "Paper, printing & packaging"], "companies": [{"name": "Hota Industrial", "website": "www.hota.com.tw", "sector": "Automotive components", "activity": "Manufacturing", "jobs": 350, "capex": 72.0, "source": "https://www.automotivelogistics.media/inbound-logistics/taiwan-based-parts-manufacturer-picks-new-mexico-for-factory/44401.article"}, {"name": "Cymmetrik", "website": "www.cymmetrik.com", "sector": "Paper, printing & packaging", "activity": "Manufacturing", "jobs": 91, "capex": 78.4, "source": "https://www.krwg.org/post/third-asian-manufacturing-company-opening-new-mexico-s-border-zone"}, {"name": "Xxentria Technology Materials", "website": "www.xxentria-tech.com/", "sector": "Metals", "activity": "Manufacturing", "jobs": 35, "capex": 17.5, "source": "https://eu.lcsun-news.com/story/money/business/2020/09/10/metal-manufacturer-xxentria-open-facilities-santa-teresa-chihuahua/5764192002/"}, {"name": "Admiral Cable", "website": "admiral-cable.com/", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 342, "capex": 50.0, "source": "https://mexico-now.com/index.php/article/4942-taiwan-based-admiral-cable-to-build-us-50-million-plant-in-santa-teresa-nm"}, {"name": "BizLink Technology", "website": "www.bizlinktech.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 218, "capex": 151.4, "source": ""}]}, {"city": "Union City (CA)", "state": "California", "lat": 37.5935, "lng": -122.0438, "jobs": 100, "capex": 50.0, "count": 1, "sectors": ["Metals"], "companies": [{"name": "Foxsemicon Integrated Technology", "website": "www.foxsemicon.com", "sector": "Metals", "activity": "Manufacturing", "jobs": 100, "capex": 50.0, "source": "https://www.foxsemicon.com/en-us/news_activity.aspx?newsid=326&newstype=1"}]}, {"city": "Boston (MA)", "state": "Massachusetts", "lat": 42.3601, "lng": -71.0589, "jobs": 25, "capex": 14.2, "count": 1, "sectors": ["Biotechnology"], "companies": [{"name": "PharmaEssentia", "website": "pharmaessentia.com", "sector": "Biotechnology", "activity": "Research & Development", "jobs": 25, "capex": 14.2, "source": "https://www.businesswire.com/news/home/20230104005334/en/PharmaEssentia-Establishes-a-New-Research-and-Development-Facility-in-the-Boston-Area"}]}, {"city": "Beaufort (SC)", "state": "South Carolina", "lat": 32.4316, "lng": -80.6698, "jobs": 67, "capex": 16.0, "count": 1, "sectors": ["Consumer products"], "companies": [{"name": "Norman International", "website": "www.nienmade.com/", "sector": "Consumer products", "activity": "Manufacturing", "jobs": 67, "capex": 16.0, "source": "https://www.areadevelopment.com/newsItems/9-21-2022/norman-usa-beaufort-south-carolina.shtml"}]}, {"city": "Manhattan (KS)", "state": "Kansas", "lat": 39.1836, "lng": -96.5717, "jobs": 154, "capex": 21.5, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "Hi-Lo Systems", "website": "www.hilosystems.com/", "sector": "Software & IT services", "activity": "Technical Support Centre", "jobs": 154, "capex": 21.5, "source": "https://www.linkedin.com/posts/hilo-systems_icprogramming-deviceprogramming-programmingservice-activity-6961196762975911936-4kkb?utm_source=linkedin_share&utm_medium=member_desktop_web"}]}, {"city": "West Lafayette (IN)", "state": "Indiana", "lat": 40.4259, "lng": -86.9081, "jobs": 30, "capex": 8.7, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "MediaTek", "website": "www.mediatek.com", "sector": "Semiconductors", "activity": "Research & Development", "jobs": 30, "capex": 8.7, "source": "https://evertiq.com/design/52081"}]}, {"city": "San Jose (CA)", "state": "California", "lat": 37.3382, "lng": -121.8863, "jobs": 940, "capex": 367.7, "count": 8, "sectors": ["Business machines & equipment", "Consumer electronics", "Electronic components", "Metals", "Semiconductors", "Software & IT services", "Transportation & Warehousing"], "companies": [{"name": "Alchip Technologies", "website": "www.alchip.com", "sector": "Semiconductors", "activity": "Headquarters", "jobs": 221, "capex": 142.2, "source": "https://www.globenewswire.com/news-release/2022/02/01/2377038/0/en/Alchip-Technology-Moves-North-America-Operation.html"}, {"name": "Andes Technology USA", "website": "andestech.com/", "sector": "Semiconductors", "activity": "Headquarters", "jobs": 221, "capex": 142.2, "source": "http://www.andestech.com/en/2021/10/08/usa_expansion/"}, {"name": "ADLINK Technology", "website": "www.adlinktech.com", "sector": "Software & IT services", "activity": "Research & Development", "jobs": 139, "capex": 25.7, "source": ""}, {"name": "Quanta Computer", "website": "www.quantatw.com", "sector": "Business machines & equipment", "activity": "Research & Development", "jobs": 179, "capex": 24.8, "source": ""}, {"name": "Leotek Electronics", "website": "www.leotek.com", "sector": "Electronic components", "activity": "Headquarters", "jobs": 83, "capex": 20.7, "source": ""}, {"name": "Vivotek USA", "website": "www.vivotek.com", "sector": "Consumer electronics", "activity": "Sales, Marketing & Support", "jobs": 37, "capex": 3.9, "source": ""}, {"name": "Dimerco Express", "website": "www.dimerco.com", "sector": "Transportation & Warehousing", "activity": "Sales, Marketing & Support", "jobs": 53, "capex": 5.4, "source": ""}, {"name": "Shenmao Technology", "website": "www.shenmao.com/en/", "sector": "Metals", "activity": "Sales, Marketing & Support", "jobs": 7, "capex": 2.8, "source": ""}]}, {"city": "Duluth (GA)", "state": "Georgia", "lat": 34.004, "lng": -84.1449, "jobs": 91, "capex": 78.4, "count": 1, "sectors": ["Paper, printing & packaging"], "companies": [{"name": "Diversified Labeling Solutions", "website": "www.tscprinters.com", "sector": "Paper, printing & packaging", "activity": "Manufacturing", "jobs": 91, "capex": 78.4, "source": "http://www.prweb.com/releases/diversified_labeling_solutions_significantly_expands_production_capacity_with_five_new_presses/prweb18365023.htm"}]}, {"city": "Arlington (TX)", "state": "Texas", "lat": 32.7357, "lng": -97.1081, "jobs": 91, "capex": 78.4, "count": 1, "sectors": ["Paper, printing & packaging"], "companies": [{"name": "Diversified Labeling Solutions", "website": "www.tscprinters.com", "sector": "Paper, printing & packaging", "activity": "Manufacturing", "jobs": 91, "capex": 78.4, "source": "http://www.prweb.com/releases/diversified_labeling_solutions_significantly_expands_production_capacity_with_five_new_presses/prweb18365023.htm"}]}, {"city": "Itasca (IL)", "state": "Illinois", "lat": 41.9753, "lng": -88.0073, "jobs": 91, "capex": 78.4, "count": 1, "sectors": ["Paper, printing & packaging"], "companies": [{"name": "Diversified Labeling Solutions", "website": "www.tscprinters.com", "sector": "Paper, printing & packaging", "activity": "Manufacturing", "jobs": 91, "capex": 78.4, "source": "http://www.prweb.com/releases/diversified_labeling_solutions_significantly_expands_production_capacity_with_five_new_presses/prweb18365023.htm"}]}, {"city": "Reno (NV)", "state": "Nevada", "lat": 39.5296, "lng": -119.8138, "jobs": 91, "capex": 78.4, "count": 1, "sectors": ["Paper, printing & packaging"], "companies": [{"name": "Diversified Labeling Solutions", "website": "www.tscprinters.com", "sector": "Paper, printing & packaging", "activity": "Manufacturing", "jobs": 91, "capex": 78.4, "source": "http://www.prweb.com/releases/diversified_labeling_solutions_significantly_expands_production_capacity_with_five_new_presses/prweb18365023.htm"}]}, {"city": "Katy (TX)", "state": "Texas", "lat": 29.7858, "lng": -95.8245, "jobs": 58, "capex": 6.6, "count": 1, "sectors": ["Plastics"], "companies": [{"name": "TSRC", "website": "www.tsrc.com.tw", "sector": "Plastics", "activity": "Research & Development", "jobs": 58, "capex": 6.6, "source": "https://www.tsrc.com.tw/news/tsrc-opens-new-global-research-development-center-in-houston-texas-usa/"}]}, {"city": "Dundee (MI)", "state": "Michigan", "lat": 41.9609, "lng": -83.6633, "jobs": 225, "capex": 154.4, "count": 2, "sectors": ["Electronic components"], "companies": [{"name": "Excellence Optoelectronics", "website": "www.eoi.com.tw", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 218, "capex": 151.4, "source": "https://www.digitimes.com/news/a20210825PD205.html"}, {"name": "Excellence Optoelectronics", "website": "www.eoi.com.tw", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 7, "capex": 3.0, "source": "http://www.taipeitimes.com/News/biz/archives/2019/08/28/2003721243"}]}, {"city": "Danvers (MA)", "state": "Massachusetts", "lat": 42.5751, "lng": -70.93, "jobs": 37, "capex": 33.8, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Advantech", "website": "www.advantech.com", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 37, "capex": 33.8, "source": "https://www.businesswire.com/news/home/20201015006015/en/Advantech-Opens-New-Offices-in-United-StatesCanada"}]}, {"city": "Downers Grove (IL)", "state": "Illinois", "lat": 41.8081, "lng": -88.0112, "jobs": 37, "capex": 33.8, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Advantech", "website": "www.advantech.com", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 37, "capex": 33.8, "source": "https://www.businesswire.com/news/home/20201015006015/en/Advantech-Opens-New-Offices-in-United-StatesCanada"}]}, {"city": "Los Gatos (CA)", "state": "California", "lat": 37.2358, "lng": -121.9624, "jobs": 19, "capex": 3.9, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "PUFsecurity", "website": "www.ememory.com.tw/", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": "https://www.design-reuse.com/news/48683/pufsecurity-north-american-office.html"}]}, {"city": "Seattle (WA)", "state": "Washington", "lat": 47.6062, "lng": -122.3321, "jobs": 178, "capex": 507.1, "count": 3, "sectors": ["Communications", "Transportation & Warehousing"], "companies": [{"name": "Synology", "website": "www.synology.com", "sector": "Communications", "activity": "ICT & Internet Infrastructure", "jobs": 71, "capex": 486.2, "source": "https://data-economy.com/synology-launches-data-centre-in-north-america/"}, {"name": "Dimerco Express", "website": "www.dimerco.com", "sector": "Transportation & Warehousing", "activity": "Sales, Marketing & Support", "jobs": 53, "capex": 5.4, "source": "https://www.ajot.com/news/dimerco-expands-north-american-network-with-new-seattle-office"}, {"name": "High Tech Computer (HTC)", "website": "www.htc.com.tw", "sector": "Communications", "activity": "Sales, Marketing & Support", "jobs": 54, "capex": 15.5, "source": ""}]}, {"city": "Milpitas (CA)", "state": "California", "lat": 37.4323, "lng": -121.8996, "jobs": 221, "capex": 142.2, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "Alchip Technologies", "website": "www.alchip.com", "sector": "Semiconductors", "activity": "Headquarters", "jobs": 221, "capex": 142.2, "source": "https://www.prnewswire.com/news-releases/alchip-technology-opens-north-america-operation-301027011.html"}]}, {"city": "Hillsboro (OR)", "state": "Oregon", "lat": 45.5229, "lng": -122.9898, "jobs": 139, "capex": 25.7, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "Insyde Software", "website": "www.insydesw.com.tw", "sector": "Software & IT services", "activity": "Research & Development", "jobs": 139, "capex": 25.7, "source": "https://www.insyde.com/press_news/press-releases/insyde%C2%AE-software-expands-operations-hillsboro-oregon"}]}, {"city": "Romeoville (IL)", "state": "Illinois", "lat": 41.6475, "lng": -88.0887, "jobs": 441, "capex": 67.0, "count": 1, "sectors": ["Consumer products"], "companies": [{"name": "Quality Craft", "website": "www.collins.com.tw", "sector": "Consumer products", "activity": "Logistics, Distribution & Transportation", "jobs": 441, "capex": 67.0, "source": "https://www.floortrendsmag.com/articles/105553-quality-craft-opens-us-support-center"}]}, {"city": "Lebanon (IN)", "state": "Indiana", "lat": 40.0481, "lng": -86.4691, "jobs": 60, "capex": 14.8, "count": 1, "sectors": ["Rubber"], "companies": [{"name": "Maxxis USA", "website": "www.cst.com.tw", "sector": "Rubber", "activity": "Logistics, Distribution & Transportation", "jobs": 60, "capex": 14.8, "source": "https://www.maxxis.com/indiana-expansion"}]}, {"city": "Nampa (ID)", "state": "Idaho", "lat": 43.5407, "lng": -116.5635, "jobs": 25, "capex": 17.4, "count": 1, "sectors": ["Food and Beverages"], "companies": [{"name": "Jetton Biochemistry", "website": "www.jetton-bioch.com.tw/index.html", "sector": "Food and Beverages", "activity": "Manufacturing", "jobs": 25, "capex": 17.4, "source": "https://www.idahofb.org/News-Media/2019/06/idaho-lands-taiwanese-dairy-manufacturer"}]}, {"city": "Secaucus (NJ)", "state": "New Jersey", "lat": 40.7895, "lng": -74.0565, "jobs": 36, "capex": 9.2, "count": 1, "sectors": ["Plastics"], "companies": [{"name": "DingZing Advanced Materials", "website": "www.dingzing.com/", "sector": "Plastics", "activity": "Logistics, Distribution & Transportation", "jobs": 36, "capex": 9.2, "source": "https://www.rubbernews.com/article/20190207/NEWS/190209959/taiwanese-tpu-extrusion-firm-boosts-presence-in-u-s"}]}, {"city": "Eastvale (CA)", "state": "California", "lat": 33.9525, "lng": -117.5814, "jobs": 10, "capex": 2.0, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Delta Electronics (Delta Group)", "website": "www.deltaww.com", "sector": "Electronic components", "activity": "Maintenance & Servicing", "jobs": 10, "capex": 2.0, "source": "https://www.pe.com/2019/01/31/delta-electronics-call-service-center-comes-to-eastvale/"}]}, {"city": "Hartford (CT)", "state": "Connecticut", "lat": 41.7658, "lng": -72.6851, "jobs": 76, "capex": 8.3, "count": 1, "sectors": ["Financial services"], "companies": [{"name": "Conning", "website": "www.cathayholdings.com", "sector": "Financial services", "activity": "Sales, Marketing & Support", "jobs": 76, "capex": 8.3, "source": "https://officesnapshots.com/2019/02/19/conning-offices-hartford/"}]}, {"city": "Chesapeake (VA)", "state": "Virginia", "lat": 36.7682, "lng": -76.2875, "jobs": 31, "capex": 2.5, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "TQ Technology", "website": "www.tqtechnology.com", "sector": "Electronic components", "activity": "Sales, Marketing & Support", "jobs": 31, "capex": 2.5, "source": "https://www.tq-group.com/en/News/TQ-opens-its-first-location-in-the-USA"}]}, {"city": "Green Bay (WI)", "state": "Wisconsin", "lat": 44.5133, "lng": -88.0133, "jobs": 200, "capex": 33.3, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Software & IT services", "activity": "Research & Development", "jobs": 200, "capex": 33.3, "source": "http://www.taipeitimes.com/News/biz/archives/2018/07/01/2003695859"}]}, {"city": "Orlando (FL)", "state": "Florida", "lat": 28.5383, "lng": -81.3792, "jobs": 32, "capex": 1.4, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "Ciber", "website": "www.htc.com.tw", "sector": "Software & IT services", "activity": "Business Services", "jobs": 32, "capex": 1.4, "source": "https://www.bizjournals.com/orlando/news/2018/05/01/9-firms-to-add-nearly-200-workers-for-tech-related.html?ana=e_du_prem&s=article_du&ed=2018-05-01&u=YFreZsuoMD9%2FXfDwgYvfnQ0bc7f0a7&t=1525247233&j=81333471"}]}, {"city": "Ontario (CA)", "state": "California", "lat": 34.0633, "lng": -117.6509, "jobs": 141, "capex": 37.9, "count": 1, "sectors": ["Automotive components"], "companies": [{"name": "Hansun", "website": "www.hanyale.com/en/index.html", "sector": "Automotive components", "activity": "Manufacturing", "jobs": 141, "capex": 37.9, "source": "https://www.hanyale.com/en/press-release/Window-Regulator-Manufacturer-HANSUN-Announces-Second-Smart-Facility/Hansun_press-release_20180530.html"}]}, {"city": "Milwaukee (WI)", "state": "Wisconsin", "lat": 43.0389, "lng": -87.9065, "jobs": 870, "capex": 11.5, "count": 1, "sectors": ["Communications"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Communications", "activity": "Headquarters", "jobs": 870, "capex": 11.5, "source": "https://www.jsonline.com/story/money/real-estate/commercial/2018/02/05/foxconn-buy-downtown-milwaukee-office-building-room-hundreds-employees/307123002/"}]}, {"city": "Scottsdale (AZ)", "state": "Arizona", "lat": 33.4942, "lng": -111.9261, "jobs": 75, "capex": 10.3, "count": 1, "sectors": ["Transportation & Warehousing"], "companies": [{"name": "Wan Hai", "website": "www.wanhai.com", "sector": "Transportation & Warehousing", "activity": "Headquarters", "jobs": 75, "capex": 10.35, "source": "https://www.bizjournals.com/phoenix/news/2018/01/03/shipping-giant-buys-scottsdale-building-for-u-s.html?ana=e_du_prem&s=article_du&ed=2018-01-06&u=YFreZsuoMD9%2FXfDwgYvfnQ0bc7f0a7&t=1515402525&j=79457951"}]}, {"city": "Baton Rouge (LA)", "state": "Louisiana", "lat": 30.4515, "lng": -91.1871, "jobs": 51, "capex": 114.5, "count": 1, "sectors": ["Chemicals"], "companies": [{"name": "Formosa Plastics Group (FPG)", "website": "www.fpc.com.tw", "sector": "Chemicals", "activity": "Manufacturing", "jobs": 51, "capex": 114.5, "source": "http://www.fpcusa.com/company/news/releases/FPCUSA-NewsReleasePVCExpansion_121817.pdf"}]}, {"city": "Mount Pleasant (WI)", "state": "Wisconsin", "lat": 42.7228, "lng": -87.8895, "jobs": 1454, "capex": 672.0, "count": 1, "sectors": ["Communications"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Communications", "activity": "Manufacturing", "jobs": 1454, "capex": 672.0, "source": "https://www.silicon.co.uk/e-enterprise/fund-raising/foxconn-scales-back-10bn-wisconsin-factory-394354"}]}, {"city": "Columbus (OH)", "state": "Ohio", "lat": 39.9612, "lng": -82.9988, "jobs": 104, "capex": 61.8, "count": 1, "sectors": ["Transportation & Warehousing"], "companies": [{"name": "Morrison Express Corporation (USA)", "website": "www.morrisonexpress.com", "sector": "Transportation & Warehousing", "activity": "Logistics, Distribution & Transportation", "jobs": 104, "capex": 61.8, "source": ""}]}, {"city": "Torrance (CA)", "state": "California", "lat": 33.8358, "lng": -118.3406, "jobs": 19, "capex": 2.7, "count": 1, "sectors": ["Rubber"], "companies": [{"name": "Federal Tire", "website": "www.federaltire.com", "sector": "Rubber", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 2.7, "source": ""}]}, {"city": "Atlanta (GA)", "state": "Georgia", "lat": 33.749, "lng": -84.388, "jobs": 37, "capex": 33.8, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Castles Technology", "website": "www.castlestech.com/", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 37, "capex": 33.8, "source": ""}]}, {"city": "Spartanburg (SC)", "state": "South Carolina", "lat": 34.9496, "lng": -81.9321, "jobs": 50, "capex": 11.9, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "Delta Power Equipment", "website": "www.toty.com.tw", "sector": "Industrial equipment", "activity": "Headquarters", "jobs": 50, "capex": 11.9, "source": ""}]}, {"city": "NYC (NY)", "state": "New York", "lat": 40.7128, "lng": -74.006, "jobs": 151, "capex": 40.2, "count": 5, "sectors": ["Financial services", "Hotels & tourism", "Semiconductors"], "companies": [{"name": "Taiwan Business Bank", "website": "www.tbb.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": ""}, {"name": "WPG Americas", "website": "www.wpgholdings.com", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": ""}, {"name": "Taiwan Cooperative Bank", "website": "www.tcfhc.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": ""}, {"name": "Bank of Taiwan", "website": "www.twfhc.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 37, "capex": 10.8, "source": ""}, {"name": "Regent Hotels & Resorts", "website": "www.regenttaipei.com", "sector": "Hotels & tourism", "activity": "Sales, Marketing & Support", "jobs": 13, "capex": 0.9, "source": ""}]}, {"city": "Andover (MA)", "state": "Massachusetts", "lat": 42.6584, "lng": -71.137, "jobs": 19, "capex": 3.9, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "WPG Americas", "website": "www.wpgholdings.com", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": ""}]}, {"city": "Green (OH)", "state": "Ohio", "lat": 40.9467, "lng": -81.4734, "jobs": 18, "capex": 2.0, "count": 1, "sectors": ["Rubber"], "companies": [{"name": "American Kenda Rubber Industrial", "website": "www.kenda.com.tw", "sector": "Rubber", "activity": "Research & Development", "jobs": 18, "capex": 2.0, "source": ""}]}, {"city": "Wilmington (MA)", "state": "Massachusetts", "lat": 42.5459, "lng": -71.1673, "jobs": 19, "capex": 3.9, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "WPG Americas", "website": "www.wpgholdings.com", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": ""}]}, {"city": "Schaumburg (IL)", "state": "Illinois", "lat": 42.0334, "lng": -88.0834, "jobs": 19, "capex": 3.9, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "WPG Americas", "website": "www.wpgholdings.com", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": ""}]}, {"city": "Mt Juliet (TN)", "state": "Tennessee", "lat": 36.2001, "lng": -86.5186, "jobs": 67, "capex": 3.7, "count": 1, "sectors": ["Consumer products"], "companies": [{"name": "KHS America", "website": "", "sector": "Consumer products", "activity": "Headquarters", "jobs": 67, "capex": 3.7, "source": ""}]}, {"city": "Irvine (CA)", "state": "California", "lat": 33.6846, "lng": -117.8265, "jobs": 191, "capex": 46.7, "count": 3, "sectors": ["Business machines & equipment", "Communications", "Financial services"], "companies": [{"name": "Comtrend", "website": "www.comtrend.com", "sector": "Communications", "activity": "Headquarters", "jobs": 122, "capex": 33.1, "source": ""}, {"name": "EverTrust Bank", "website": "www.ibt.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": ""}, {"name": "Getac Technology Corporation (Getac)", "website": "www.mitac.com", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 28, "capex": 1.3, "source": ""}]}, {"city": "Deerfield Beach (FL)", "state": "Florida", "lat": 26.3184, "lng": -80.0998, "jobs": 30, "capex": 6.0, "count": 1, "sectors": ["Medical devices"], "companies": [{"name": "SHL Pharma", "website": "www.shl-group.com", "sector": "Medical devices", "activity": "Manufacturing", "jobs": 30, "capex": 6.0, "source": ""}]}, {"city": "Akron (OH)", "state": "Ohio", "lat": 41.0814, "lng": -81.519, "jobs": 45, "capex": 8.5, "count": 1, "sectors": ["Rubber"], "companies": [{"name": "American Kenda Rubber Industrial", "website": "www.kenda.com.tw", "sector": "Rubber", "activity": "Research & Development", "jobs": 45, "capex": 8.5, "source": ""}]}, {"city": "Suwanee (GA)", "state": "Georgia", "lat": 34.0512, "lng": -84.0671, "jobs": 10, "capex": 1.2, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "Shini Plastics Technologies", "website": "www.shini.com", "sector": "Industrial equipment", "activity": "Sales, Marketing & Support", "jobs": 10, "capex": 1.2, "source": ""}]}, {"city": "Walnut (CA)", "state": "California", "lat": 34.0217, "lng": -117.8653, "jobs": 56, "capex": 11.6, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "Papago", "website": "www.mactiontech.com", "sector": "Software & IT services", "activity": "Sales, Marketing & Support", "jobs": 56, "capex": 11.6, "source": ""}]}, {"city": "Troy (MI)", "state": "Michigan", "lat": 42.6064, "lng": -83.1498, "jobs": 200, "capex": 3.4, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "HTC Global Services", "website": "www.htc.com.tw", "sector": "Software & IT services", "activity": "Research & Development", "jobs": 200, "capex": 3.4, "source": ""}]}, {"city": "Harrisburg (PA)", "state": "Pennsylvania", "lat": 40.2732, "lng": -76.8867, "jobs": 164, "capex": 30.0, "count": 1, "sectors": ["Communications"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Communications", "activity": "Manufacturing", "jobs": 164, "capex": 30.0, "source": "http://www.areadevelopment.com/newsItems/11-22-2013/foxconn-technology-production-plant-expansion-harrisburg-pennsylvania238922.shtml"}]}, {"city": "Doral (FL)", "state": "Florida", "lat": 25.8195, "lng": -80.3554, "jobs": 204, "capex": 41.8, "count": 2, "sectors": ["Business machines & equipment"], "companies": [{"name": "ADATA Technology", "website": "www.adata.com.tw", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 140, "capex": 16.3, "source": ""}, {"name": "ADATA Technology", "website": "www.adata.com.tw", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 64, "capex": 25.5, "source": ""}]}, {"city": "Pasadena (CA)", "state": "California", "lat": 34.1478, "lng": -118.1445, "jobs": 41, "capex": 12.3, "count": 1, "sectors": ["Financial services"], "companies": [{"name": "EverTrust Bank", "website": "www.ibt.com.tw", "sector": "Financial services", "activity": "Business Services", "jobs": 41, "capex": 12.3, "source": ""}]}, {"city": "Sacramento (CA)", "state": "California", "lat": 38.5816, "lng": -121.4944, "jobs": 70, "capex": 20.0, "count": 1, "sectors": ["Transportation & Warehousing"], "companies": [{"name": "EVA Airways", "website": "www.evaair.com", "sector": "Transportation & Warehousing", "activity": "Education & Training", "jobs": 70, "capex": 20.0, "source": ""}]}, {"city": "Pleasant Prairie (WI)", "state": "Wisconsin", "lat": 42.5334, "lng": -87.9251, "jobs": 61, "capex": 18.8, "count": 1, "sectors": ["Metals"], "companies": [{"name": "Ta Chen International", "website": "www.tachen.com", "sector": "Metals", "activity": "Logistics, Distribution & Transportation", "jobs": 61, "capex": 18.8, "source": ""}]}, {"city": "San Francisco (CA)", "state": "California", "lat": 37.7749, "lng": -122.4194, "jobs": 155, "capex": 54.0, "count": 2, "sectors": ["Communications", "Software & IT services"], "companies": [{"name": "Appier", "website": "www.appier.com", "sector": "Software & IT services", "activity": "Sales, Marketing & Support", "jobs": 56, "capex": 11.6, "source": ""}, {"name": "High Tech Computer (HTC)", "website": "www.htc.com.tw", "sector": "Communications", "activity": "Research & Development", "jobs": 99, "capex": 42.4, "source": ""}]}, {"city": "McKinney (TX)", "state": "Texas", "lat": 33.1972, "lng": -96.6397, "jobs": 110, "capex": 27.8, "count": 2, "sectors": ["Business machines & equipment", "Plastics"], "companies": [{"name": "Wistron GreenTech", "website": "www.wistron.com", "sector": "Business machines & equipment", "activity": "Recycling", "jobs": 80, "capex": 21.0, "source": ""}, {"name": "TYG Products", "website": "www.tyg.com.tw", "sector": "Plastics", "activity": "Manufacturing", "jobs": 30, "capex": 6.8, "source": ""}]}, {"city": "Conover (NC)", "state": "North Carolina", "lat": 35.7143, "lng": -81.2132, "jobs": 4, "capex": 1.0, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Smart Electric Works", "website": "www.smartelectricworks.com", "sector": "Electronic components", "activity": "Headquarters", "jobs": 4, "capex": 1.0, "source": ""}]}, {"city": "Chicago (IL)", "state": "Illinois", "lat": 41.8781, "lng": -87.6298, "jobs": 53, "capex": 5.4, "count": 1, "sectors": ["Transportation & Warehousing"], "companies": [{"name": "Dimerco Customs Brokerage Services", "website": "www.dimerco.com", "sector": "Transportation & Warehousing", "activity": "Sales, Marketing & Support", "jobs": 53, "capex": 5.4, "source": ""}]}, {"city": "Point Comfort (TX)", "state": "Texas", "lat": 28.6783, "lng": -96.553, "jobs": 901, "capex": 2715.8, "count": 4, "sectors": ["Chemicals", "Coal, oil & gas", "Plastics"], "companies": [{"name": "Formosa Plastics Corporation USA (FPCUSA)", "website": "www.fpc.com.tw", "sector": "Chemicals", "activity": "Manufacturing", "jobs": 225, "capex": 1700.0, "source": ""}, {"name": "Formosa Plastics Corporation USA (FPCUSA)", "website": "www.fpc.com.tw", "sector": "Coal, oil & gas", "activity": "Electricity", "jobs": 20, "capex": 793.3, "source": ""}, {"name": "Formosa Plastics Group (FPG)", "website": "www.fpc.com.tw", "sector": "Plastics", "activity": "Manufacturing", "jobs": 598, "capex": 200.0, "source": ""}, {"name": "Formosa Plastics Group (FPG)", "website": "www.fpc.com.tw", "sector": "Plastics", "activity": "Manufacturing", "jobs": 58, "capex": 22.5, "source": ""}]}, {"city": "Hudson (MA)", "state": "Massachusetts", "lat": 42.3918, "lng": -71.5662, "jobs": 31, "capex": 2.5, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Minmax Technology", "website": "www.minmax.com.tw", "sector": "Electronic components", "activity": "Sales, Marketing & Support", "jobs": 31, "capex": 2.5, "source": ""}]}, {"city": "Henderson (KY)", "state": "Kentucky", "lat": 37.8362, "lng": -87.59, "jobs": 15, "capex": 1.2, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "Sunspring America", "website": "www.sunspring.com.tw", "sector": "Industrial equipment", "activity": "Manufacturing", "jobs": 15, "capex": 1.2, "source": ""}]}, {"city": "Nashua (NH)", "state": "New Hampshire", "lat": 42.7654, "lng": -71.4676, "jobs": 38, "capex": 5.7, "count": 1, "sectors": ["Software & IT services"], "companies": [{"name": "Infortrend Technology", "website": "www.infortrend.com.tw", "sector": "Software & IT services", "activity": "Sales, Marketing & Support", "jobs": 38, "capex": 5.7, "source": ""}]}, {"city": "Southaven (MS)", "state": "Mississippi", "lat": 34.989, "lng": -90.0126, "jobs": 60, "capex": 1.5, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "WPG Americas", "website": "www.wpgholdings.com", "sector": "Semiconductors", "activity": "Logistics, Distribution & Transportation", "jobs": 60, "capex": 1.5, "source": ""}]}, {"city": "Durham (NC)", "state": "North Carolina", "lat": 35.994, "lng": -78.8986, "jobs": 45, "capex": 9.4, "count": 1, "sectors": ["Communications"], "companies": [{"name": "High Tech Computer (HTC)", "website": "www.htc.com.tw", "sector": "Communications", "activity": "Research & Development", "jobs": 45, "capex": 9.4, "source": ""}]}, {"city": "Norcross (GA)", "state": "Georgia", "lat": 33.9412, "lng": -84.2135, "jobs": 30, "capex": 10.0, "count": 1, "sectors": ["Automotive components"], "companies": [{"name": "Maxzone Auto Parts", "website": "www.depo.com.tw", "sector": "Automotive components", "activity": "Headquarters", "jobs": 30, "capex": 10.0, "source": ""}]}, {"city": "Charlotte (NC)", "state": "North Carolina", "lat": 35.2271, "lng": -80.8431, "jobs": 25, "capex": 4.1, "count": 1, "sectors": ["Industrial equipment"], "companies": [{"name": "Anderson America", "website": "www.andersongroup.com.tw", "sector": "Industrial equipment", "activity": "Headquarters", "jobs": 25, "capex": 4.1, "source": ""}]}, {"city": "Newark (DE)", "state": "Delaware", "lat": 39.6837, "lng": -75.7497, "jobs": 75, "capex": 25.5, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Motech Industries", "website": "www.motechind.com", "sector": "Electronic components", "activity": "Manufacturing", "jobs": 75, "capex": 25.5, "source": ""}]}, {"city": "Murfreesboro (TN)", "state": "Tennessee", "lat": 35.8456, "lng": -86.3903, "jobs": 317, "capex": 19.0, "count": 1, "sectors": ["Food and Beverages"], "companies": [{"name": "Wei-Chuan USA", "website": "www.weichuan.com.tw", "sector": "Food and Beverages", "activity": "Manufacturing", "jobs": 317, "capex": 19.0, "source": ""}]}, {"city": "Grapevine (TX)", "state": "Texas", "lat": 32.9343, "lng": -97.0781, "jobs": 100, "capex": 16.7, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Wistron Infocomm (Texas)", "website": "www.wistron.com", "sector": "Business machines & equipment", "activity": "Maintenance & Servicing", "jobs": 100, "capex": 16.7, "source": ""}]}, {"city": "Newark (NJ)", "state": "New Jersey", "lat": 40.7357, "lng": -74.1724, "jobs": 43, "capex": 16.8, "count": 1, "sectors": ["Rubber"], "companies": [{"name": "Ge Mao Rubber Industrial (GMORS)", "website": "www.gmors.com", "sector": "Rubber", "activity": "Headquarters", "jobs": 43, "capex": 16.8, "source": ""}]}, {"city": "Fontana (CA)", "state": "California", "lat": 34.0922, "lng": -117.435, "jobs": 132, "capex": 15.0, "count": 1, "sectors": ["Automotive components"], "companies": [{"name": "Maxzone Auto Parts", "website": "www.depo.com.tw", "sector": "Automotive components", "activity": "Headquarters", "jobs": 132, "capex": 15.0, "source": ""}]}, {"city": "Tempe (AZ)", "state": "Arizona", "lat": 33.4255, "lng": -111.94, "jobs": 46, "capex": 9.1, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Aide Solar", "website": "www.panjit.com.tw", "sector": "Electronic components", "activity": "Headquarters", "jobs": 46, "capex": 9.1, "source": ""}]}, {"city": "Lake Forest (CA)", "state": "California", "lat": 33.6469, "lng": -117.6892, "jobs": 6, "capex": 2.5, "count": 1, "sectors": ["Non-automotive transport OEM"], "companies": [{"name": "Neco Parts", "website": "www.necoparts.com", "sector": "Non-automotive transport OEM", "activity": "Sales, Marketing & Support", "jobs": 6, "capex": 2.5, "source": ""}]}, {"city": "Camarillo (CA)", "state": "California", "lat": 34.2164, "lng": -119.0376, "jobs": 28, "capex": 1.3, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Godex International Co Ltd", "website": "www.godex.com.cn", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 28, "capex": 1.3, "source": ""}]}, {"city": "Anacortes (WA)", "state": "Washington", "lat": 48.5126, "lng": -122.6127, "jobs": 43, "capex": 20.0, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Marine Town", "website": "www.marinetown.com.tw", "sector": "Electronic components", "activity": "Logistics, Distribution & Transportation", "jobs": 43, "capex": 20.0, "source": ""}]}, {"city": "Woburn (MA)", "state": "Massachusetts", "lat": 42.4795, "lng": -71.1495, "jobs": 54, "capex": 62.3, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "MediaTek", "website": "www.mediatek.com", "sector": "Semiconductors", "activity": "Headquarters", "jobs": 54, "capex": 62.3, "source": ""}]}, {"city": "Tulare (CA)", "state": "California", "lat": 36.2077, "lng": -119.3473, "jobs": 53, "capex": 2.8, "count": 2, "sectors": ["Plastics"], "companies": [{"name": "Viscotec-US, Inc.", "website": "", "sector": "Plastics", "activity": "Recycling", "jobs": 13, "capex": 1.8, "source": ""}, {"name": "Viscotec-US, Inc.", "website": "", "sector": "Plastics", "activity": "Recycling", "jobs": 40, "capex": 1.0, "source": ""}]}, {"city": "Sunrise (FL)", "state": "Florida", "lat": 26.167, "lng": -80.2561, "jobs": 350, "capex": 19.0, "count": 1, "sectors": ["Communications"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Communications", "activity": "Research & Development", "jobs": 350, "capex": 19.0, "source": "https://www.gflalliance.org/index.php?src=gendocs&ref=SuccessStories&category=BusinessAssistance&submenu=SiteSelectors"}]}, {"city": "Jeffersonville (IN)", "state": "Indiana", "lat": 38.2776, "lng": -85.7372, "jobs": 321, "capex": 7.3, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "ASUStek", "website": "www.asus.com", "sector": "Business machines & equipment", "activity": "Customer Contact Centre", "jobs": 321, "capex": 7.3, "source": ""}]}, {"city": "Plainfield (IN)", "state": "Indiana", "lat": 39.7042, "lng": -86.3994, "jobs": 1400, "capex": 15.0, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Hon Hai Precision Industry (Foxconn)", "website": "www.foxconn.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 1400, "capex": 15.0, "source": "http://www.siteselection.com/ssinsider/bbdeal/bd070920.htm"}]}, {"city": "Bedford (MA)", "state": "Massachusetts", "lat": 42.4912, "lng": -71.2762, "jobs": 20, "capex": 2.9, "count": 1, "sectors": ["Electronic components"], "companies": [{"name": "Gloria Solar", "website": "www.e-tonsolar.com", "sector": "Electronic components", "activity": "Sales, Marketing & Support", "jobs": 20, "capex": 2.9, "source": ""}]}, {"city": "Hayward (CA)", "state": "California", "lat": 37.6688, "lng": -122.0808, "jobs": 64, "capex": 25.5, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Posiflex", "website": "www.posiflex.com.tw", "sector": "Business machines & equipment", "activity": "Headquarters", "jobs": 64, "capex": 25.5, "source": ""}]}, {"city": "Brea (CA)", "state": "California", "lat": 33.9167, "lng": -117.9, "jobs": 28, "capex": 1.3, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "AAEON Technology", "website": "www.aaeon.com", "sector": "Business machines & equipment", "activity": "Sales, Marketing & Support", "jobs": 28, "capex": 1.3, "source": ""}]}, {"city": "Nashville (TN)", "state": "Tennessee", "lat": 36.1627, "lng": -86.7816, "jobs": 35, "capex": 16.9, "count": 1, "sectors": ["Food and Beverages"], "companies": [{"name": "Wei-Chuan USA", "website": "www.weichuan.com.tw", "sector": "Food and Beverages", "activity": "Manufacturing", "jobs": 35, "capex": 16.9, "source": ""}]}, {"city": "Cranbury (NJ)", "state": "New Jersey", "lat": 40.3148, "lng": -74.5135, "jobs": 87, "capex": 57.6, "count": 1, "sectors": ["Transportation & Warehousing"], "companies": [{"name": "Genera", "website": "www.tyc.com.tw", "sector": "Transportation & Warehousing", "activity": "Logistics, Distribution & Transportation", "jobs": 87, "capex": 57.6, "source": ""}]}, {"city": "La Vergne (TN)", "state": "Tennessee", "lat": 36.0153, "lng": -86.5819, "jobs": 50, "capex": 7.0, "count": 1, "sectors": ["Business machines & equipment"], "companies": [{"name": "Quanta Computer", "website": "www.quantatw.com", "sector": "Business machines & equipment", "activity": "Manufacturing", "jobs": 50, "capex": 7.0, "source": ""}]}, {"city": "Rowland Heights (CA)", "state": "California", "lat": 33.9758, "lng": -117.905, "jobs": 19, "capex": 3.9, "count": 1, "sectors": ["Semiconductors"], "companies": [{"name": "Bestec Power Electronics", "website": "www.bestec.com.tw", "sector": "Semiconductors", "activity": "Sales, Marketing & Support", "jobs": 19, "capex": 3.9, "source": "http://www.bestec.com.tw/milestones.php"}]}], "total": 254};
 
+// State
 let showDots = true;
 let activeSector = '';
-let projection, path, svg, g, zoom;
-let currentZoomState = null;
-let usData, stateFeatures, fipsToAbbr;
+let viewLevel = 'national'; // 'national' | 'state' | 'city'
+let activeStateAbbr = null;
+let activeStateFeature = null;
+let activeCityData = null;
 
-const colorScales = {
-  capex:    [0, 50, 500, 5000, 50000],
-  jobs:     [0, 100, 500, 2000, 10000],
-  projects: [0, 1, 3, 8, 20]
-};
-const colors = ['#e2e8f0','#93c5fd','#3b82f6','#1d4ed8','#1e3a8a'];
+let svg, g, zoom, projection, path;
 
-const FIPS_TO_ABBR = {
-  "01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL",
-  "13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA",
-  "23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE",
-  "32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK",
-  "41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT",
-  "51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"
-};
+const FIPS = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","72":"PR"};
+
+const COLOR_SCALES = { capex:[0,50,500,5000,50000], jobs:[0,100,500,2000,10000], projects:[0,1,3,8,20] };
+const COLORS = ['#e2e8f0','#93c5fd','#3b82f6','#1d4ed8','#1e3a8a'];
 
 function getColor(abbr) {
   const d = FDI.states[abbr];
   if (!d) return '#e2e8f0';
   if (activeSector && !d.sectors.includes(activeSector)) return '#e2e8f0';
   const metric = document.getElementById('color-by').value;
-  const val = metric === 'capex' ? d.capex : metric === 'jobs' ? d.jobs : d.projects;
-  const breaks = colorScales[metric];
-  for (let i = breaks.length - 1; i >= 0; i--) {
-    if (val >= breaks[i]) return colors[i];
-  }
-  return colors[0];
+  const val = metric==='capex' ? d.capex : metric==='jobs' ? d.jobs : d.projects;
+  const breaks = COLOR_SCALES[metric];
+  for (let i = breaks.length-1; i >= 0; i--) if (val >= breaks[i]) return COLORS[i];
+  return COLORS[0];
 }
 
-function dotRadius(capex) {
-  if (capex < 15) return 5;
-  if (capex < 50) return 7;
-  if (capex < 200) return 10;
-  if (capex < 1000) return 14;
-  return 20;
+function baseDotR(capex) {
+  if (capex < 15) return 6;
+  if (capex < 50) return 9;
+  if (capex < 200) return 13;
+  if (capex < 1000) return 18;
+  return 24;
 }
 
 function fmt(n) { return n ? n.toLocaleString() : '—'; }
-function fmtM(n) { return n ? '$' + n.toLocaleString() + 'M' : '—'; }
+function fmtM(n) { return n ? '$'+n.toLocaleString()+'M' : '—'; }
 
+// ── INIT
 async function initMap() {
   const container = document.getElementById('map-container');
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-
+  const w = container.clientWidth, h = container.clientHeight;
   svg = d3.select('#map-svg').attr('viewBox', `0 0 ${w} ${h}`);
 
-  // Zoom behavior — mouse wheel + drag
-  zoom = d3.zoom()
-    .scaleExtent([0.8, 20])
-    .on('zoom', (event) => {
-      g.attr('transform', event.transform);
-      // Scale dot sizes inversely so they don't get huge when zoomed
-      const k = event.transform.k;
-      g.selectAll('.city-dot').attr('r', d => dotRadius(d.capex) / Math.sqrt(k));
-      g.selectAll('.state-label').style('font-size', `${8 / Math.sqrt(k)}px`);
-      g.selectAll('.city-label').style('font-size', `${9 / Math.sqrt(k)}px`);
-      g.selectAll('.state-border').attr('stroke-width', 0.5 / k);
-      g.selectAll('.state').attr('stroke-width', 0.5 / k);
-    });
-
+  zoom = d3.zoom().scaleExtent([0.5, 40]).on('zoom', onZoom);
   svg.call(zoom);
-
-  // Prevent context menu on right click
-  svg.on('contextmenu', e => e.preventDefault());
-
   g = svg.append('g');
 
-  usData = await d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json');
-  stateFeatures = topojson.feature(usData, usData.objects.states);
-  fipsToAbbr = FIPS_TO_ABBR;
+  const us = await d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json');
+  window._stateFeatures = topojson.feature(us, us.objects.states).features;
 
-  projection = d3.geoAlbersUsa()
-    .scale(w * 0.95)
-    .translate([w / 2, h / 2]);
-
+  projection = d3.geoAlbersUsa().scale(w * 0.95).translate([w/2, h/2]);
   path = d3.geoPath().projection(projection);
 
-  // Draw states
+  // State fills
   g.selectAll('.state')
-    .data(stateFeatures.features)
-    .join('path')
-    .attr('class', 'state')
+    .data(window._stateFeatures)
+    .join('path').attr('class','state')
     .attr('d', path)
-    .attr('fill', d => getColor(fipsToAbbr[d.id]))
-    .on('mouseover', function(event, d) {
-      const abbr = fipsToAbbr[d.id];
-      const fdi = FDI.states[abbr];
-      showStateTooltip(event, abbr, fdi);
-    })
+    .attr('fill', d => getColor(FIPS[d.id]))
+    .on('mouseover', (e, d) => showStateTooltip(e, FIPS[d.id]))
     .on('mousemove', moveTooltip)
     .on('mouseout', hideTooltip)
-    .on('click', function(event, d) {
-      event.stopPropagation();
-      hideTooltip();
-      const abbr = fipsToAbbr[d.id];
-      const fdi = FDI.states[abbr];
-      zoomToState(d, abbr, fdi);
-    });
+    .on('click', (e, d) => { e.stopPropagation(); hideTooltip(); clickState(d); });
 
-  // State borders
+  // Borders
   g.append('path')
-    .datum(topojson.mesh(usData, usData.objects.states, (a,b) => a !== b))
-    .attr('class', 'state-border')
-    .attr('d', path);
+    .datum(topojson.mesh(us, us.objects.states, (a,b) => a!==b))
+    .attr('class','state-border').attr('d', path);
 
-  // State labels
-  g.selectAll('.state-label')
-    .data(stateFeatures.features)
-    .join('text')
-    .attr('class', 'state-label')
-    .attr('transform', d => {
-      const c = path.centroid(d);
-      return (c && !isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)';
-    })
-    .text(d => fipsToAbbr[d.id] || '');
+  // National state abbr labels
+  g.selectAll('.state-label-nat')
+    .data(window._stateFeatures)
+    .join('text').attr('class','state-label-nat')
+    .attr('transform', d => { const c = path.centroid(d); return (c&&!isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)'; })
+    .text(d => FIPS[d.id] || '');
 
-  drawCities();
+  // City dots layer (always on top)
+  g.append('g').attr('id','city-layer');
+  // City labels layer (on top of dots)
+  g.append('g').attr('id','label-layer');
+
+  drawCityDots();
+  setBreadcrumb('national');
 }
 
-function zoomToState(feature, abbr, fdi) {
-  const container = document.getElementById('map-container');
-  const w = container.clientWidth;
-  const h = container.clientHeight;
+// ── ZOOM HANDLER
+function onZoom(event) {
+  const k = event.transform.k;
+  g.attr('transform', event.transform);
+  // Scale borders and dots inversely
+  g.selectAll('.state').attr('stroke-width', 0.5/k);
+  g.selectAll('.state-border').attr('stroke-width', 0.5/k);
+  // Adjust dot sizes
+  d3.selectAll('.city-dot').attr('r', function() {
+    const capex = +d3.select(this).attr('data-capex');
+    return baseDotR(capex) / Math.sqrt(k);
+  });
+  // Keep labels readable
+  d3.selectAll('.city-label-text').style('font-size', `${10/Math.sqrt(k)}px`);
+  d3.selectAll('.city-label-bg')
+    .attr('width', function() { return +d3.select(this).attr('data-w') / Math.sqrt(k); })
+    .attr('height', 13/Math.sqrt(k))
+    .attr('x', function() { return -( +d3.select(this).attr('data-w') / Math.sqrt(k) ) / 2; })
+    .attr('y', function() { const r = +d3.select(this).attr('data-r'); return (r + 3) / Math.sqrt(k); });
+  d3.selectAll('.city-label-text')
+    .attr('y', function() { const r = +d3.select(this).attr('data-r'); return (r + 10) / Math.sqrt(k); });
+}
 
-  const [[x0, y0], [x1, y1]] = path.bounds(feature);
-  const stateW = x1 - x0;
-  const stateH = y1 - y0;
-  const scale = Math.min(8, 0.85 / Math.max(stateW / w, stateH / h));
-  const cx = (x0 + x1) / 2;
-  const cy = (y0 + y1) / 2;
+// ── CITY DOTS — drawn for all cities always, sized by investment
+function drawCityDots() {
+  const layer = d3.select('#city-layer');
+  layer.selectAll('*').remove();
+  if (!showDots) return;
 
-  currentZoomState = abbr;
+  const cities = FDI.cities.filter(c => !activeSector || c.sectors.includes(activeSector));
+  const k = getCurrentK();
 
-  svg.transition().duration(700).call(
-    zoom.transform,
-    d3.zoomIdentity
-      .translate(w / 2, h / 2)
-      .scale(scale)
-      .translate(-cx, -cy)
+  cities.forEach(city => {
+    const p = projection([city.lng, city.lat]);
+    if (!p) return;
+    layer.append('circle')
+      .attr('class','city-dot')
+      .attr('cx', p[0]).attr('cy', p[1])
+      .attr('r', baseDotR(city.capex) / Math.sqrt(k))
+      .attr('data-capex', city.capex)
+      .attr('fill', 'rgba(220,50,47,0.75)')
+      .on('mouseover', e => showCityTooltip(e, city))
+      .on('mousemove', moveTooltip)
+      .on('mouseout', hideTooltip)
+      .on('click', e => { e.stopPropagation(); hideTooltip(); clickCity(city); });
+  });
+}
+
+// ── CITY LABELS — only shown when in state view, only for cities in active state
+function drawCityLabels(stateAbbr) {
+  const layer = d3.select('#label-layer');
+  layer.selectAll('*').remove();
+  if (!stateAbbr) return;
+
+  const stateCities = FDI.cities.filter(c =>
+    c.state === (FDI.states[stateAbbr] ? FDI.states[stateAbbr].name : '') &&
+    (!activeSector || c.sectors.includes(activeSector))
   );
 
-  // Update UI
-  document.getElementById('back-btn').style.display = 'block';
-  document.getElementById('view-mode-badge').textContent = `${abbr} — click city markers for details`;
-  document.getElementById('bc-state').textContent = fdi ? fdi.name : abbr;
-  document.getElementById('bc-state').style.display = 'inline';
-  document.getElementById('bc-sep').style.display = 'inline';
+  const k = getCurrentK();
 
-  // Show city labels when zoomed in
-  g.selectAll('.city-label').style('display', 'block');
+  stateCities.forEach(city => {
+    const p = projection([city.lng, city.lat]);
+    if (!p) return;
+    const name = city.city.replace(/ \([A-Z]{2}\)$/, '');
+    const r = baseDotR(city.capex);
+    const estimatedW = name.length * 6.5;
+    const labelY = r + 10;
+    const bgY = r + 3;
 
+    const grp = layer.append('g')
+      .attr('class','city-label-wrap')
+      .attr('transform', `translate(${p[0]},${p[1]})`);
+
+    grp.append('rect')
+      .attr('class','city-label-bg')
+      .attr('data-w', estimatedW)
+      .attr('data-r', r)
+      .attr('width', estimatedW / Math.sqrt(k))
+      .attr('height', 13 / Math.sqrt(k))
+      .attr('x', -(estimatedW / Math.sqrt(k)) / 2)
+      .attr('y', bgY / Math.sqrt(k))
+      .attr('rx', 2);
+
+    grp.append('text')
+      .attr('class','city-label-text')
+      .attr('data-r', r)
+      .attr('y', labelY / Math.sqrt(k))
+      .style('font-size', `${10/Math.sqrt(k)}px`)
+      .text(name);
+  });
+}
+
+function getCurrentK() {
+  try {
+    return d3.zoomTransform(svg.node()).k;
+  } catch(e) { return 1; }
+}
+
+// ── CLICK HANDLERS
+function clickState(feature) {
+  const abbr = FIPS[feature.id];
+  const fdi = FDI.states[abbr];
+  activeStateAbbr = abbr;
+  activeStateFeature = feature;
+  viewLevel = 'state';
+
+  zoomToFeatureBounds(feature, 0.82);
+  drawCityLabels(abbr);
+  setBreadcrumb('state', abbr, fdi ? fdi.name : abbr);
   if (fdi) openStatePanel(abbr, fdi);
 }
 
-function resetZoom() {
-  const container = document.getElementById('map-container');
-  const w = container.clientWidth;
-  const h = container.clientHeight;
+function clickCity(city) {
+  activeCityData = city;
+  viewLevel = 'city';
 
-  currentZoomState = null;
+  // Zoom to city — tight zoom around the dot
+  const container = document.getElementById('map-container');
+  const w = container.clientWidth, h = container.clientHeight;
+  const p = projection([city.lng, city.lat]);
+  if (!p) return;
 
   svg.transition().duration(600).call(
     zoom.transform,
-    d3.zoomIdentity
+    d3.zoomIdentity.translate(w/2, h/2).scale(14).translate(-p[0], -p[1])
   );
 
-  document.getElementById('back-btn').style.display = 'none';
-  document.getElementById('view-mode-badge').textContent = 'National view';
-  document.getElementById('bc-state').style.display = 'none';
-  document.getElementById('bc-sep').style.display = 'none';
-  g.selectAll('.city-label').style('display', 'none');
+  setBreadcrumb('city', activeStateAbbr, FDI.states[activeStateAbbr] ? FDI.states[activeStateAbbr].name : activeStateAbbr, city.city.replace(/ \([A-Z]{2}\)$/, ''));
+  openCityPanel(city);
+}
+
+function goNational() {
+  viewLevel = 'national';
+  activeStateAbbr = null;
+  activeStateFeature = null;
+  activeCityData = null;
+  svg.transition().duration(600).call(zoom.transform, d3.zoomIdentity);
+  d3.select('#label-layer').selectAll('*').remove();
+  setBreadcrumb('national');
   closePanel();
 }
 
-function manualZoom(factor) {
-  svg.transition().duration(300).call(zoom.scaleBy, factor);
+function goState() {
+  if (!activeStateFeature) return;
+  viewLevel = 'state';
+  activeCityData = null;
+  zoomToFeatureBounds(activeStateFeature, 0.82);
+  drawCityLabels(activeStateAbbr);
+  setBreadcrumb('state', activeStateAbbr, FDI.states[activeStateAbbr] ? FDI.states[activeStateAbbr].name : activeStateAbbr);
+  if (FDI.states[activeStateAbbr]) openStatePanel(activeStateAbbr, FDI.states[activeStateAbbr]);
 }
 
-function drawCities() {
-  g.selectAll('.city-dot').remove();
-  g.selectAll('.city-label').remove();
-  if (!showDots) return;
-
-  const cities = FDI.cities.filter(c => {
-    if (activeSector && !c.sectors.includes(activeSector)) return false;
-    return true;
-  });
-
-  const cityG = g.selectAll('.city-group')
-    .data(cities)
-    .join('g')
-    .attr('class', 'city-group')
-    .attr('transform', d => {
-      const p = projection([d.lng, d.lat]);
-      return p ? `translate(${p[0]},${p[1]})` : 'translate(-9999,-9999)';
-    });
-
-  cityG.append('circle')
-    .attr('class', 'city-dot')
-    .attr('r', d => dotRadius(d.capex))
-    .on('mouseover', function(event, d) { showCityTooltip(event, d); })
-    .on('mousemove', moveTooltip)
-    .on('mouseout', hideTooltip)
-    .on('click', function(event, d) {
-      event.stopPropagation();
-      hideTooltip();
-      openCityPanel(d);
-    });
-
-  cityG.append('text')
-    .attr('class', 'city-label')
-    .attr('dy', d => dotRadius(d.capex) + 10)
-    .style('display', 'none')
-    .text(d => d.city.replace(/ \([A-Z]{2}\)/, ''));
+function zoomToFeatureBounds(feature, padding) {
+  const container = document.getElementById('map-container');
+  const w = container.clientWidth, h = container.clientHeight;
+  const [[x0,y0],[x1,y1]] = path.bounds(feature);
+  const scale = Math.min(12, padding / Math.max((x1-x0)/w, (y1-y0)/h));
+  const cx = (x0+x1)/2, cy = (y0+y1)/2;
+  svg.transition().duration(700).call(
+    zoom.transform,
+    d3.zoomIdentity.translate(w/2, h/2).scale(scale).translate(-cx, -cy)
+  );
 }
 
+// ── BREADCRUMB
+function setBreadcrumb(level, stateAbbr, stateName, cityName) {
+  const hint = document.getElementById('hint');
+  document.getElementById('bc-sep1').style.display = 'none';
+  document.getElementById('bc-sep2').style.display = 'none';
+  document.getElementById('bc-state-name').style.display = 'none';
+  document.getElementById('bc-city-name').style.display = 'none';
+
+  if (level === 'national') {
+    hint.textContent = 'Click a state to zoom in';
+  } else if (level === 'state') {
+    document.getElementById('bc-sep1').style.display = 'inline';
+    document.getElementById('bc-state-name').textContent = stateName;
+    document.getElementById('bc-state-name').style.display = 'inline';
+    hint.textContent = 'Click a city marker to zoom in · Click United States to go back';
+  } else if (level === 'city') {
+    document.getElementById('bc-sep1').style.display = 'inline';
+    document.getElementById('bc-state-name').textContent = stateName;
+    document.getElementById('bc-state-name').style.display = 'inline';
+    document.getElementById('bc-sep2').style.display = 'inline';
+    document.getElementById('bc-city-name').textContent = cityName;
+    document.getElementById('bc-city-name').style.display = 'inline';
+    hint.textContent = 'Click state name above to go back';
+  }
+}
+
+// ── CONTROLS
 function recolor() {
-  const metric = document.getElementById('color-by').value;
-  const labels = { capex: 'Capital investment (USD M)', jobs: 'Jobs created', projects: 'No. of projects' };
-  document.getElementById('leg-title').textContent = labels[metric];
-  g.selectAll('.state').attr('fill', d => getColor(fipsToAbbr[d.id]));
+  const labels = { capex:'Capital investment (USD M)', jobs:'Jobs created', projects:'No. of projects' };
+  document.getElementById('leg-title').textContent = labels[document.getElementById('color-by').value];
+  g.selectAll('.state').attr('fill', d => getColor(FIPS[d.id]));
 }
 
 function toggleDots(btn) {
   showDots = !showDots;
   btn.classList.toggle('active', showDots);
   btn.textContent = showDots ? 'Show' : 'Hidden';
-  drawCities();
+  drawCityDots();
 }
 
 function filterSector() {
   activeSector = document.getElementById('sector-filter').value;
-  g.selectAll('.state').attr('fill', d => getColor(fipsToAbbr[d.id]));
-  drawCities();
+  g.selectAll('.state').attr('fill', d => getColor(FIPS[d.id]));
+  drawCityDots();
+  if (activeStateAbbr) drawCityLabels(activeStateAbbr);
 }
 
-// Tooltip
-function showStateTooltip(event, abbr, d) {
+function manualZoom(f) { svg.transition().duration(300).call(zoom.scaleBy, f); }
+
+// ── TOOLTIPS
+function showStateTooltip(event, abbr) {
+  const d = FDI.states[abbr];
   const tt = document.getElementById('tooltip');
   if (!d) {
     tt.innerHTML = `<h3>${abbr}</h3><div style="font-size:11px;color:#888;">No Taiwan FDI recorded</div>`;
@@ -418,11 +475,10 @@ function showStateTooltip(event, abbr, d) {
       <div class="tt-row"><span class="tt-key">Capital invested</span><span class="tt-val">${fmtM(d.capex)}</span></div>
       <div class="tt-row"><span class="tt-key">Jobs created</span><span class="tt-val">${fmt(d.jobs)}</span></div>
       <div class="tt-row"><span class="tt-key">Companies</span><span class="tt-val">${d.companies.length}</span></div>
-      <div class="tt-cos"><strong>Companies:</strong> ${cos}</div>
-      <div class="tt-hint">Click to zoom into ${d.name}</div>`;
+      <div class="tt-cos">${cos}</div>
+      <div class="tt-hint">Click to zoom in</div>`;
   }
-  tt.style.display = 'block';
-  moveTooltip(event);
+  tt.style.display = 'block'; moveTooltip(event);
 }
 
 function showCityTooltip(event, city) {
@@ -432,10 +488,9 @@ function showCityTooltip(event, city) {
     <div class="tt-row"><span class="tt-key">Projects</span><span class="tt-val">${city.count}</span></div>
     <div class="tt-row"><span class="tt-key">Capital invested</span><span class="tt-val">${fmtM(city.capex)}</span></div>
     <div class="tt-row"><span class="tt-key">Jobs created</span><span class="tt-val">${fmt(city.jobs)}</span></div>
-    <div class="tt-cos"><strong>Companies:</strong> ${cos}</div>
-    <div class="tt-hint">Click for full details</div>`;
-  tt.style.display = 'block';
-  moveTooltip(event);
+    <div class="tt-cos">${cos}</div>
+    <div class="tt-hint">Click to zoom in</div>`;
+  tt.style.display = 'block'; moveTooltip(event);
 }
 
 function moveTooltip(event) {
@@ -444,19 +499,18 @@ function moveTooltip(event) {
   let x = event.clientX - rect.left + 14;
   let y = event.clientY - rect.top - 10;
   if (x + 270 > rect.width) x = event.clientX - rect.left - 278;
-  if (y + 200 > rect.height) y = y - 170;
-  tt.style.left = x + 'px';
-  tt.style.top = y + 'px';
+  if (y + 210 > rect.height) y = y - 180;
+  tt.style.left = x + 'px'; tt.style.top = y + 'px';
 }
 
 function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
 
-// Side panel
+// ── PANELS
 function openStatePanel(abbr, d) {
   document.getElementById('panel-title').textContent = d.name;
   document.getElementById('panel-sub').textContent = `${d.projects} Taiwan FDI projects · ${d.companies.length} companies`;
   const sectors = d.sectors.map(s=>`<span class="sector-tag">${s}</span>`).join('');
-  const cities = d.cities.length ? d.cities.slice(0,15).join(', ') + (d.cities.length > 15 ? ` +${d.cities.length-15} more` : '') : '—';
+  const cities = d.cities.length ? d.cities.join(', ') : '—';
   const cos = d.companies.map(c=>`<div class="co-card"><div class="co-name">${c}</div></div>`).join('');
   document.getElementById('panel-body').innerHTML = `
     <div class="p-stat"><span class="p-stat-key">Capital invested</span><span class="p-stat-val">${fmtM(d.capex)}</span></div>
@@ -464,13 +518,13 @@ function openStatePanel(abbr, d) {
     <div class="p-stat"><span class="p-stat-key">Projects</span><span class="p-stat-val">${d.projects}</span></div>
     <div class="p-stat"><span class="p-stat-key">Companies</span><span class="p-stat-val">${d.companies.length}</span></div>
     <div class="p-section"><div class="p-section-title">Sectors</div>${sectors}</div>
-    <div class="p-section"><div class="p-section-title">Cities with investment</div><div style="font-size:11.5px;color:#444;line-height:1.7;">${cities}</div></div>
+    <div class="p-section"><div class="p-section-title">Cities</div><div style="font-size:11.5px;color:#444;line-height:1.8;">${cities}</div></div>
     <div class="p-section"><div class="p-section-title">All companies (${d.companies.length})</div>${cos}</div>`;
   document.getElementById('panel').classList.add('open');
 }
 
 function openCityPanel(city) {
-  document.getElementById('panel-title').textContent = city.city;
+  document.getElementById('panel-title').textContent = city.city.replace(/ \([A-Z]{2}\)$/, '');
   document.getElementById('panel-sub').textContent = `${city.state} · ${city.count} project${city.count>1?'s':''}`;
   const sectors = city.sectors.map(s=>`<span class="sector-tag">${s}</span>`).join('');
   const cos = city.companies.map(c=>`
@@ -499,16 +553,11 @@ window.addEventListener('resize', () => {
   const w = container.clientWidth, h = container.clientHeight;
   svg.attr('viewBox', `0 0 ${w} ${h}`);
   if (projection) {
-    projection.scale(w * 0.95).translate([w/2, h/2]);
+    projection.scale(w*0.95).translate([w/2, h/2]);
     g.selectAll('.state').attr('d', path);
-    g.selectAll('.state-label').attr('transform', d => {
-      const c = path.centroid(d);
-      return (c && !isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)';
-    });
-    g.selectAll('.city-group').attr('transform', d => {
-      const p = projection([d.lng, d.lat]);
-      return p ? `translate(${p[0]},${p[1]})` : 'translate(-9999,-9999)';
-    });
+    g.selectAll('.state-label-nat').attr('transform', d => { const c = path.centroid(d); return (c&&!isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)'; });
+    drawCityDots();
+    if (activeStateAbbr) drawCityLabels(activeStateAbbr);
   }
 });
 
