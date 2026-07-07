@@ -1,20 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="robots" content="noindex, nofollow">
-  <meta charset="UTF-8">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Taiwan FDI Map</title>
-  <!-- rest of your existing head content: CSS links, D3 script tags, etc. -->
-</head>
-<body>
-  <!-- your existing map code -->
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<meta name="robots" content="noindex, nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taiwan FDI in the United States — Interactive Map</title>
@@ -51,7 +39,7 @@ svg { width: 100%; height: 100%; }
 .state-border { fill: none; stroke: white; stroke-width: 0.5; pointer-events: none; }
 .state-label-nat { font-size: 8px; fill: rgba(255,255,255,0.9); pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; font-weight: bold; }
 /* City dots */
-.city-dot { cursor: pointer; stroke: #9b111e; stroke-width: 1; }
+.city-dot { cursor: pointer; stroke: #0f766e; stroke-width: 1; }
 .city-dot:hover { stroke-width: 2.5; opacity: 1; }
 .city-dot.legacy { stroke: #1C3D6E; }
 /* City labels — only shown in state view, only for active state cities */
@@ -88,7 +76,7 @@ svg { width: 100%; height: 100%; }
 #legend h4 { font-size: 10px; color: #1C3D6E; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
 .leg-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; font-size: 10px; color: #444; }
 .leg-swatch { width: 14px; height: 10px; border-radius: 2px; }
-.leg-circle { border-radius: 50%; background: rgba(220,50,47,0.7); border: 1px solid #9b111e; flex-shrink: 0; }
+.leg-circle { border-radius: 50%; background: rgba(13,148,136,0.7); border: 1px solid #0f766e; flex-shrink: 0; }
 /* Zoom controls */
 #zoom-controls { position: absolute; bottom: 12px; left: 12px; display: flex; gap: 4px; }
 .zoom-btn { width: 30px; height: 30px; background: white; border: 1px solid #c8d4e8; border-radius: 6px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); color: #1C3D6E; font-weight: bold; }
@@ -169,8 +157,8 @@ svg { width: 100%; height: 100%; }
         <div class="leg-row"><div class="leg-circle" style="width:14px;height:14px;"></div>Large</div>
       </div>
       <div style="border-top:1px solid #e5e7eb;margin-top:6px;padding-top:6px;">
-        <div class="leg-row"><div class="leg-circle" style="width:9px;height:9px;background:rgba(220,50,47,0.75);border-color:#9b111e;"></div>fDi Markets project</div>
-        <div class="leg-row"><div class="leg-circle" style="width:9px;height:9px;background:rgba(28,61,110,0.75);border-color:#1C3D6E;"></div>Booklet spotlight / legacy</div>
+        <div class="leg-row"><div class="leg-circle" style="width:9px;height:9px;background:rgba(13,148,136,0.75);border:1px solid #0f766e;"></div>fDi Markets project</div>
+        <div class="leg-row"><div class="leg-circle" style="width:9px;height:9px;background:rgba(28,61,110,0.75);border:1px solid #1C3D6E;"></div>Booklet spotlight / legacy</div>
       </div>
     </div>
     <div id="zoom-controls">
@@ -325,7 +313,7 @@ function drawCityDots() {
       .attr('cx', p[0]).attr('cy', p[1])
       .attr('r', baseDotR(city.capex) / Math.sqrt(k))
       .attr('data-capex', city.capex || 0)
-      .attr('fill', isLegacy ? 'rgba(28,61,110,0.75)' : 'rgba(220,50,47,0.75)')
+      .attr('fill', isLegacy ? 'rgba(28,61,110,0.75)' : 'rgba(13,148,136,0.75)')
       .on('mouseover', e => showCityTooltip(e, city))
       .on('mousemove', moveTooltip)
       .on('mouseout', hideTooltip)
@@ -393,7 +381,6 @@ function clickState(feature) {
   viewLevel = 'state';
 
   zoomToFeatureBounds(feature, 0.82);
-  drawCityLabels(abbr);
   setBreadcrumb('state', abbr, fdi ? fdi.name : abbr);
   if (fdi) openStatePanel(abbr, fdi);
 }
@@ -433,7 +420,6 @@ function goState() {
   viewLevel = 'state';
   activeCityData = null;
   zoomToFeatureBounds(activeStateFeature, 0.82);
-  drawCityLabels(activeStateAbbr);
   setBreadcrumb('state', activeStateAbbr, FDI.states[activeStateAbbr] ? FDI.states[activeStateAbbr].name : activeStateAbbr);
   if (FDI.states[activeStateAbbr]) openStatePanel(activeStateAbbr, FDI.states[activeStateAbbr]);
 }
@@ -495,7 +481,6 @@ function filterSector() {
   activeSourceFilter = document.getElementById('source-filter').value;
   g.selectAll('.state').attr('fill', d => getColor(FIPS[d.id]));
   drawCityDots();
-  if (activeStateAbbr) drawCityLabels(activeStateAbbr);
 }
 
 function manualZoom(f) { svg.transition().duration(300).call(zoom.scaleBy, f); }
@@ -596,9 +581,9 @@ window.addEventListener('resize', () => {
   if (projection) {
     projection.scale(w*0.95).translate([w/2, h/2]);
     g.selectAll('.state').attr('d', path);
+    g.select('.state-border').attr('d', path);
     g.selectAll('.state-label-nat').attr('transform', d => { const c = path.centroid(d); return (c&&!isNaN(c[0])) ? `translate(${c})` : 'translate(-9999,-9999)'; });
     drawCityDots();
-    if (activeStateAbbr) drawCityLabels(activeStateAbbr);
   }
 });
 
